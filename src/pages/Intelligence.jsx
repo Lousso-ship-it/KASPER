@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, AreaChart, Area, ComposedChart } from 'recharts';
 import StrategicGlobe3D from '../components/common/StrategicGlobe3D';
+import { UploadFile } from "@/api/integrations";
+import { Document } from "@/api/entities";
+import { chat as chatAPI } from "@/api/chat";
 
 // Données pour différentes analyses
 const analysisData = {
@@ -447,12 +450,67 @@ export default function ChatPage() {
   const [conversation, setConversation] = useState([]);
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const [dragActive, setDragActive] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [conversation]);
+
+  const getFileType = (mimeType) => {
+    if (mimeType.startsWith('image/')) return 'generic';
+    if (mimeType.includes('pdf')) return 'generic';
+    if (mimeType.includes('text/plain') || mimeType.includes('csv')) return 'text';
+    return 'generic';
+  };
+
+  const getFileFormat = (filename) => filename.split('.').pop().toLowerCase();
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setDragActive(false);
+  };
+
+  const handleFileUpload = async (file) => {
+    setIsUploading(true);
+    try {
+      const uploadResult = await UploadFile({ file });
+      if (uploadResult.file_url) {
+        const newDoc = {
+          title: file.name,
+          type: getFileType(file.type),
+          category: "uncategorized",
+          description: `Fichier téléchargé: ${file.name}`,
+          file_url: uploadResult.file_url,
+          file_size: file.size,
+          file_format: getFileFormat(file.name),
+          source: "Upload chat",
+          generation_date: new Date().toISOString()
+        };
+        await Document.create(newDoc);
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    setDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      await handleFileUpload(file);
+    }
+  };
 
   const handleSearch = async (queryText = query) => {
     if (!queryText.trim()) return;
@@ -466,23 +524,30 @@ export default function ChatPage() {
 
     setConversation((prev) => [...prev, userMessage]);
     setQuery('');
-
-    // Simulate API response with real data
-    setTimeout(() => {
+    try {
+      const apiRes = await chatAPI(queryText);
       const analysisKey = Object.keys(analysisData).find((key) =>
         queryText.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(queryText.toLowerCase())
       );
-
       const response = {
         id: Date.now() + 1,
         type: 'assistant',
-        content: analysisKey ? analysisData[analysisKey].content : generateGenericResponse(queryText),
-        charts: analysisKey ? analysisData[analysisKey].charts : null
+        content: apiRes?.content || (analysisKey ? analysisData[analysisKey].content : generateGenericResponse(queryText)),
+        charts: apiRes?.charts || (analysisKey ? analysisData[analysisKey].charts : null)
       };
-
       setConversation((prev) => [...prev, response]);
+    } catch (error) {
+      console.error("Chat error:", error);
+      const response = {
+        id: Date.now() + 1,
+        type: 'assistant',
+        content: generateGenericResponse(queryText),
+        charts: null
+      };
+      setConversation((prev) => [...prev, response]);
+    } finally {
       setIsSearching(false);
-    }, 2000);
+    }
   };
 
   const generateGenericResponse = (query) => {
@@ -674,7 +739,19 @@ Basé sur les capacités actuelles de collecte de renseignements, l'évaluation 
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div
+      className="relative h-full"
+      onDragOver={handleDragOver}
+      onDragEnter={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {dragActive && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 border-2 border-dashed border-[#ff6b35] text-white font-mono pointer-events-none">
+          {isUploading ? 'Téléchargement...' : 'Déposez le fichier pour l\'uploader'}
+        </div>
+      )}
+      <div className="h-full flex flex-col">
       {conversation.length === 0 ? (
         // Interface d'accueil simplifiée
         <div className="flex-1 flex flex-col justify-center items-center space-y-10 max-w-5xl mx-auto px-6">
@@ -784,6 +861,7 @@ Basé sur les capacités actuelles de collecte de renseignements, l'évaluation 
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
