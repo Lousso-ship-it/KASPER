@@ -1,21 +1,16 @@
 
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import {
-  BrainCircuit,
-  Plus,
   Search,
   Compass,
   LayoutGrid,
   User,
-  ChevronLeft,
   Monitor as MonitorIcon,
   Settings,
   TrendingUp,
   BarChart3,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import AnimatedBackground from "../components/common/AnimatedBackground";
 
 const mainNavItems = [
@@ -81,7 +76,7 @@ export default function Layout({ children }) {
             `}</style>
             
             {/* Barre latérale tactique */}
-            <aside className="relative z-10 w-72 flex flex-col bg-[var(--sidebar-bg)]/95 backdrop-blur-sm text-[var(--text-secondary)] border-r border-[var(--border-color)]">
+            <aside className="relative z-10 hidden sm:flex sm:flex-col sm:w-64 md:w-72 lg:w-80 bg-[var(--sidebar-bg)]/95 backdrop-blur-sm text-[var(--text-secondary)] border-r border-[var(--border-color)]" aria-label="Navigation principale">
                 {/* En-tête simplifié */}
                 <div className="p-4 border-b border-[var(--border-color)] text-center">
                     <div className="text-[var(--orange-primary)] font-bold text-2xl tracking-wider">
@@ -100,12 +95,14 @@ export default function Layout({ children }) {
                         const isFirstItem = index === 0;
                         
                         return (
-                            <Link 
-                                key={item.title} 
-                                to={item.href} 
+                            <Link
+                                key={item.title}
+                                to={item.href}
+                                aria-label={item.title}
+                                aria-current={isActive ? 'page' : undefined}
                                 className={`flex items-center p-3 mb-1 text-sm font-medium tracking-wide transition-all duration-200 ${
                                     isActive || (isFirstItem && location.pathname === createPageUrl(''))
-                                    ? 'bg-[var(--orange-primary)] text-white' 
+                                    ? 'bg-[var(--orange-primary)] text-white'
                                     : 'text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] hover:text-white'
                                 }`}
                             >
@@ -123,12 +120,14 @@ export default function Layout({ children }) {
                         const isActive = location.pathname.startsWith(item.href.split('?')[0]);
                         
                         return (
-                            <Link 
-                                key={item.title} 
-                                to={item.href} 
+                            <Link
+                                key={item.title}
+                                to={item.href}
+                                aria-label={item.title}
+                                aria-current={isActive ? 'page' : undefined}
                                 className={`flex items-center p-3 mb-1 text-sm font-medium tracking-wide transition-all duration-200 ${
-                                    isActive 
-                                    ? 'bg-[var(--orange-primary)] text-white' 
+                                    isActive
+                                    ? 'bg-[var(--orange-primary)] text-white'
                                     : 'text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] hover:text-white'
                                 }`}
                             >
@@ -141,7 +140,7 @@ export default function Layout({ children }) {
                 
                 {/* Pied de page */}
                 <div className="p-4 border-t border-[var(--border-color)]">
-                     <button className="flex items-center w-full p-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] hover:text-white transition-colors">
+                     <button className="flex items-center w-full p-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] hover:text-white transition-colors" aria-label="Connexion agent">
                         <div className="w-6 h-6 flex items-center justify-center rounded bg-[var(--orange-primary)] text-white mr-3">
                             <User className="w-3 h-3" />
                         </div>

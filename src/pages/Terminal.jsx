@@ -1,35 +1,30 @@
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { BrokerConnection } from "@/api/entities";
 import { TradingBot } from "@/api/entities";
 import { User } from "@/api/entities";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Link,
   Bot,
-  DollarSign,
   CheckCircle,
   Monitor,
   BarChart3,
   Activity,
   LogIn,
-  Plus,
   TrendingUp
 } from "lucide-react";
 import BrokerConnections from "../components/exchange/BrokerConnections";
 import TradingDashboard from "../components/exchange/TradingDashboard";
 import BotManager from "../components/exchange/BotManager";
 import Portfolio from "../components/exchange/Portfolio";
-import OrderBook from "../components/exchange/OrderBook";
 import TradingWorkspace from "../components/markets/TradingWorkspace";
 import GlobalIndices from "../components/markets/GlobalIndices";
 
 export default function TerminalPage() {
   const [connections, setConnections] = useState([]);
   const [tradingBots, setTradingBots] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
 
@@ -42,11 +37,10 @@ export default function TerminalPage() {
       await User.me();
       setIsAuthenticated(true);
       await loadTerminalData();
-    } catch (error) {
+    } catch {
       setIsAuthenticated(false);
     } finally {
       setAuthChecked(true);
-      setLoading(false);
     }
   };
 
@@ -94,7 +88,7 @@ export default function TerminalPage() {
         <div className="p-16 text-center bg-[#2a2a2a] border border-[#3a3a3a]">
           <LogIn className="w-16 h-16 mx-auto mb-6 text-[#ff6b35]" />
           <h3 className="text-2xl font-bold text-white mb-4 font-mono">CONNEXION REQUISE</h3>
-          <Button onClick={handleLogin} className="tactical-button h-14 px-8">
+          <Button onClick={handleLogin} className="tactical-button h-14 px-8" aria-label="Se connecter">
             <LogIn className="w-6 h-6 mr-3" />
             SE CONNECTER
           </Button>
@@ -110,14 +104,14 @@ export default function TerminalPage() {
   return (
     <div className="h-full flex flex-col space-y-6">
       {/* En-tête simplifié */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white font-mono tracking-wider">TERMINAL</h1>
           <p className="text-[#a0a0a0] font-mono">Trading automatisé et surveillance des marchés</p>
         </div>
-        
+
         {/* Métriques compactes */}
-        <div className="flex gap-6">
+        <div className="flex gap-6 mt-4 md:mt-0">
           <div className="text-center">
             <div className="text-2xl font-bold text-white font-mono">{connectedBrokers}</div>
             <div className="text-xs text-[#a0a0a0] font-mono uppercase">Brokers</div>
@@ -138,28 +132,28 @@ export default function TerminalPage() {
       {/* Interface principale */}
       <div className="flex-1 overflow-hidden">
         <Tabs defaultValue="markets" className="h-full flex flex-col">
-          <TabsList className="bg-[#2a2a2a] p-1 w-fit">
-            <TabsTrigger value="markets" className="font-mono data-[state=active]:bg-[#ff6b35]">
+          <TabsList className="bg-[#2a2a2a] p-1 w-full overflow-x-auto md:w-fit">
+            <TabsTrigger value="markets" className="font-mono data-[state=active]:bg-[#ff6b35]" aria-label="Marchés">
               <TrendingUp className="w-4 h-4 mr-2" />
               MARCHÉS
             </TabsTrigger>
-            <TabsTrigger value="trading" className="font-mono data-[state=active]:bg-[#ff6b35]">
+            <TabsTrigger value="trading" className="font-mono data-[state=active]:bg-[#ff6b35]" aria-label="Trading">
               <Activity className="w-4 h-4 mr-2" />
               TRADING
             </TabsTrigger>
-            <TabsTrigger value="dashboard" className="font-mono data-[state=active]:bg-[#ff6b35]">
+            <TabsTrigger value="dashboard" className="font-mono data-[state=active]:bg-[#ff6b35]" aria-label="Dashboard">
               <Monitor className="w-4 h-4 mr-2" />
               DASHBOARD
             </TabsTrigger>
-            <TabsTrigger value="connections" className="font-mono data-[state=active]:bg-[#ff6b35]">
+            <TabsTrigger value="connections" className="font-mono data-[state=active]:bg-[#ff6b35]" aria-label="Connexions">
               <Link className="w-4 h-4 mr-2" />
               CONNEXIONS
             </TabsTrigger>
-            <TabsTrigger value="portfolio" className="font-mono data-[state=active]:bg-[#ff6b35]">
+            <TabsTrigger value="portfolio" className="font-mono data-[state=active]:bg-[#ff6b35]" aria-label="Portfolio">
               <BarChart3 className="w-4 h-4 mr-2" />
               PORTFOLIO
             </TabsTrigger>
-            <TabsTrigger value="bots" className="font-mono data-[state=active]:bg-[#ff6b35]">
+            <TabsTrigger value="bots" className="font-mono data-[state=active]:bg-[#ff6b35]" aria-label="Bots">
               <Bot className="w-4 h-4 mr-2" />
               BOTS
             </TabsTrigger>
