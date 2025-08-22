@@ -1,5 +1,7 @@
 
 import React, { useState } from "react";
+import { useWorldBankIndicator } from "@/hooks/use-world-bank-indicator"
+import { useIMFSeries } from "@/hooks/use-imf-series"
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -63,6 +65,9 @@ const NewsFeedCard = ({ item }) => (
 export default function EconomicPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
+  const { data: gdpData, loading: gdpLoading } = useWorldBankIndicator("USA", "NY.GDP.MKTP.CD");
+  const { data: imfData, loading: imfLoading } = useIMFSeries("IFS", { country: "US", series: "NGDP_RPCH", startPeriod: "2019", endPeriod: "2023" });
+
   return (
     <div className="space-y-8 animate-fade-in">
        <Card className="bg-[#171717] border-[#2a2a2a]">
@@ -101,6 +106,12 @@ export default function EconomicPage() {
       </Card>
       
       <EconomicCalendar />
+
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold text-[#e5e5e5]">Exemples d&#39;API</h3>
+        <pre className="text-xs text-[#a3a3a3] bg-[#0D0D0D] p-4 rounded overflow-x-auto">{gdpLoading ? "Chargement des données World Bank..." : JSON.stringify(gdpData?.[0], null, 2)}</pre>
+        <pre className="text-xs text-[#a3a3a3] bg-[#0D0D0D] p-4 rounded overflow-x-auto">{imfLoading ? "Chargement des données IMF..." : JSON.stringify(imfData?.[0], null, 2)}</pre>
+      </div>
 
       <div className="space-y-6">
         <h3 className="text-2xl font-semibold text-[#e5e5e5]">Fil d'actualité économique</h3>
