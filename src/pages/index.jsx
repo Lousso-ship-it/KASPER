@@ -22,6 +22,7 @@ import Files from "./Files";
 
 import Terminal from "./Terminal";
 import Monitor from "./Monitor";
+import Dashboard from "./Dashboard";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
@@ -49,6 +50,7 @@ const PAGES = {
     
     Terminal: Terminal,
     Monitor: Monitor,
+    Dashboard: Dashboard,
     
 }
 
@@ -99,6 +101,7 @@ function PagesContent() {
                 
                 <Route path="/Terminal" element={<Terminal />} />
                 <Route path="/Monitor" element={<Monitor />} />
+                <Route path="/Dashboard" element={<Dashboard />} />
                 
             </Routes>
         </Layout>

@@ -8,6 +8,7 @@ import {
   Search,
   Compass,
   LayoutGrid,
+  LayoutDashboard,
   User,
   ChevronLeft,
   Monitor as MonitorIcon,
@@ -24,6 +25,7 @@ const mainNavItems = [
     { title: 'FICHIERS', href: createPageUrl('Files'), icon: LayoutGrid },
     { title: 'TERMINAL', href: createPageUrl('Terminal'), icon: TrendingUp },
     { title: 'MONITOR', href: createPageUrl('Monitor'), icon: BarChart3 },
+    { title: 'DASHBOARD', href: createPageUrl('Dashboard'), icon: LayoutDashboard },
   ];
 
 const secondaryNavItems = [
