@@ -585,8 +585,6 @@ Basé sur les capacités actuelles de collecte de renseignements, l'évaluation 
     if (!chartData || !chartData.length) return null;
 
     const firstItem = chartData[0];
-    // eslint-disable-next-line no-unused-vars
-    const keys = Object.keys(firstItem).filter((key) => key !== 'year' && key !== 'month' && key !== 'period' && key !== 'sector');
 
     // Different chart types based on data structure
     if (firstItem.forecast !== undefined) {
