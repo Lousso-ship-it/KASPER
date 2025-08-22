@@ -2,6 +2,9 @@
 import React, { useState } from 'react';
 import InteractiveWorldMap from '../components/explorer/InteractiveWorldMap';
 import CountryDataPanel from '../components/explorer/CountryDataPanel';
+import ToolGDP from '../components/explorer/tools/ToolGDP';
+import ToolInflation from '../components/explorer/tools/ToolInflation';
+import ToolNews from '../components/explorer/tools/ToolNews';
 import { AnimatePresence } from 'framer-motion';
 
 // Données mock pour les détails des pays (inchangées)
@@ -95,25 +98,19 @@ export default function ExplorerPage() {
                     <InteractiveWorldMap onCountryClick={handleCountryClick} />
                 </div>
                 
-                {/* Zone étendue pour les outils futurs */}
+                {/* Outils opérationnels */}
                 <div className="flex-1 bg-[#2a2a2a] border border-[#3a3a3a] rounded-lg p-6">
-                    <div className="flex items-center justify-center h-full">
-                        <div className="text-center space-y-4">
-                            <h3 className="text-xl font-bold text-white font-mono tracking-wider">ZONE D'OUTILS OPÉRATIONNELS</h3>
-                            <p className="text-[#a0a0a0] font-mono">Espace réservé pour les outils d'analyse et contrôles tactiques.</p>
-                            <div className="grid grid-cols-3 gap-4 mt-8 max-w-md mx-auto">
-                                <div className="h-16 bg-[#3a3a3a] rounded border border-[#4a4a4a] flex items-center justify-center">
-                                    <span className="text-xs text-[#a0a0a0] font-mono">OUTIL 1</span>
-                                </div>
-                                <div className="h-16 bg-[#3a3a3a] rounded border border-[#4a4a4a] flex items-center justify-center">
-                                    <span className="text-xs text-[#a0a0a0] font-mono">OUTIL 2</span>
-                                </div>
-                                <div className="h-16 bg-[#3a3a3a] rounded border border-[#4a4a4a] flex items-center justify-center">
-                                    <span className="text-xs text-[#a0a0a0] font-mono">OUTIL 3</span>
-                                </div>
-                            </div>
+                    {selectedCountry ? (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
+                            <ToolGDP country={selectedCountry.name} />
+                            <ToolInflation country={selectedCountry.name} />
+                            <ToolNews country={selectedCountry.name} />
                         </div>
-                    </div>
+                    ) : (
+                        <div className="flex items-center justify-center h-full">
+                            <p className="text-[#a0a0a0] font-mono">Sélectionnez un pays pour afficher les outils.</p>
+                        </div>
+                    )}
                 </div>
             </div>
 
