@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +14,8 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
     type: selectedTemplate?.type || "",
     category: selectedTemplate?.category || "",
     frequency: "daily",
+    // Heure d'exécution au format HH:MM
+    trigger: "09:00",
     parameters: {
       email_notifications: true
     }
@@ -110,7 +113,7 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
             {/* Fréquence */}
             <div>
               <label className="block text-sm font-bold text-[#a0a0a0] mb-2 font-mono uppercase tracking-wider">
-                Fréquence d'exécution
+                Fréquence d&apos;exécution
               </label>
               <Select value={formData.frequency} onValueChange={(value) => setFormData({...formData, frequency: value})}>
                 <SelectTrigger className="bg-[#1a1a1a] border-[#3a3a3a] text-white font-mono">
@@ -123,6 +126,20 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
                   <SelectItem value="quarterly" className="text-white font-mono">Trimestriel</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Heure d&apos;exécution */}
+            <div>
+              <label className="block text-sm font-bold text-[#a0a0a0] mb-2 font-mono uppercase tracking-wider">
+                Heure d&apos;exécution
+              </label>
+              <Input
+                type="time"
+                value={formData.trigger}
+                onChange={(e) => setFormData({ ...formData, trigger: e.target.value })}
+                className="bg-[#1a1a1a] border-[#3a3a3a] text-white font-mono"
+                required
+              />
             </div>
 
             {/* Actions */}
@@ -140,3 +157,14 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
     </div>
   );
 }
+
+TaskForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  selectedTemplate: PropTypes.shape({
+    title: PropTypes.string,
+    description: PropTypes.string,
+    type: PropTypes.string,
+    category: PropTypes.string
+  })
+};
