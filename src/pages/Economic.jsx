@@ -52,7 +52,15 @@ const NewsFeedCard = ({ item }) => (
     </CardContent>
     <CardFooter className="flex justify-between items-center">
       <div className="flex gap-2 flex-wrap">
-        {item.tags.map(tag => <Badge key={tag} variant="outline" className="border-[#2a2a2a] bg-[#0D0D0D] text-[#a3a3a3]">{tag}</Badge>)}
+        {item.tags.map(tag => (
+          <Badge
+            key={tag}
+            variant="outline"
+            className="border-[#2a2a2a] bg-[#0D0D0D] text-[#a3a3a3]"
+          >
+            {tag}
+          </Badge>
+        ))}
       </div>
       <div className="flex items-center gap-2 text-sm text-[#a3a3a3]">
         <Clock className="w-4 h-4" />
