@@ -4,82 +4,34 @@ import InteractiveWorldMap from '../components/explorer/InteractiveWorldMap';
 import CountryDataPanel from '../components/explorer/CountryDataPanel';
 import { AnimatePresence } from 'framer-motion';
 
-// Données mock pour les détails des pays (inchangées)
-const countryDetails = {
-    'France': {
-        name: 'France',
-        flag: '🇫🇷',
-        continent: 'Europe',
-        socio: {
-            population: '67.4M',
-            life_expectancy: '82.5 ans',
-            hdi: '0.903 (Très élevé)',
-        },
-        eco: {
-            gdp: '2.94T USD',
-            gdp_growth: '+0.9%',
-            unemployment: '7.3%',
-            main_sectors: 'Services, Industrie, Agriculture',
-        },
-        finance: {
-            inflation: '4.1%',
-            interest_rate: '4.50%',
-            public_debt: '112% du PIB',
-        }
-    },
-    'Germany': {
-        name: 'Allemagne',
-        flag: '🇩🇪',
-        continent: 'Europe',
-        socio: {
-            population: '83.2M',
-            life_expectancy: '81.0 ans',
-            hdi: '0.942 (Très élevé)',
-        },
-        eco: {
-            gdp: '4.26T USD',
-            gdp_growth: '+1.2%',
-            unemployment: '5.6%',
-            main_sectors: 'Automobile, Ingénierie, Chimie',
-        },
-        finance: {
-            inflation: '6.2%',
-            interest_rate: '4.50%',
-            public_debt: '68% du PIB',
-        }
-    },
-    'United States': {
-        name: 'États-Unis',
-        flag: '🇺🇸',
-        continent: 'Amérique du Nord',
-        socio: {
-            population: '331.9M',
-            life_expectancy: '77.3 ans',
-            hdi: '0.921 (Très élevé)',
-        },
-        eco: {
-            gdp: '23.32T USD',
-            gdp_growth: '+2.1%',
-            unemployment: '3.7%',
-            main_sectors: 'Technologie, Finance, Santé',
-        },
-        finance: {
-            inflation: '3.2%',
-            interest_rate: '5.50%',
-            public_debt: '129% du PIB',
-        }
-    },
-    // Ajouter plus de pays si nécessaire
-};
+// Convertit le code ISO2 en emoji drapeau
+const getFlagEmoji = (countryCode) =>
+    countryCode
+        .toUpperCase()
+        .replace(/./g, char => String.fromCodePoint(127397 + char.charCodeAt(0)));
 
 export default function ExplorerPage() {
     const [selectedCountry, setSelectedCountry] = useState(null);
 
-    const handleCountryClick = (countryName) => {
-        const matchedCountry = Object.keys(countryDetails).find(key => 
-            key.toLowerCase() === countryName.toLowerCase() || countryName.includes(key)
-        );
-        setSelectedCountry(countryDetails[matchedCountry] || null);
+    const handleCountryClick = async (countryName) => {
+        try {
+            const res = await fetch('https://api.worldbank.org/v2/country?format=json&per_page=400');
+            const data = await res.json();
+            const countries = data[1] || [];
+            const match = countries.find(c => c.name.toLowerCase() === countryName.toLowerCase());
+            if (match) {
+                setSelectedCountry({
+                    name: match.name,
+                    code: match.id,
+                    flag: getFlagEmoji(match.id)
+                });
+            } else {
+                setSelectedCountry(null);
+            }
+        } catch (error) {
+            console.error('Failed to fetch country data', error);
+            setSelectedCountry(null);
+        }
     };
 
     const handleClosePanel = () => {
