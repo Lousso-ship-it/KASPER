@@ -13,6 +13,7 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
     type: selectedTemplate?.type || "",
     category: selectedTemplate?.category || "",
     frequency: "daily",
+    outputDatasetId: selectedTemplate?.outputDatasetId || "",
     parameters: {
       email_notifications: true
     }
@@ -123,6 +124,19 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
                   <SelectItem value="quarterly" className="text-white font-mono">Trimestriel</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Output Dataset ID */}
+            <div>
+              <label className="block text-sm font-bold text-[#a0a0a0] mb-2 font-mono uppercase tracking-wider">
+                ID du dataset de sortie
+              </label>
+              <Input
+                placeholder="Dataset ID"
+                value={formData.outputDatasetId}
+                onChange={(e) => setFormData({ ...formData, outputDatasetId: e.target.value })}
+                className="bg-[#1a1a1a] border-[#3a3a3a] text-white font-mono"
+              />
             </div>
 
             {/* Actions */}
