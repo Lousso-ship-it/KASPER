@@ -35,7 +35,7 @@ export default function Layout({ children }) {
     return (
         <div className="flex h-screen w-full bg-[#1a1a1a] relative overflow-hidden">
             <AnimatedBackground />
-            <style jsx global>{`
+            <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
                 
                 :root {
