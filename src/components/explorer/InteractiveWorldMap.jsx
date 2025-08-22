@@ -1,6 +1,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
+import { getCountriesGeoJSON } from '../../api/dataProviders';
 
 const InteractiveWorldMap = ({ onCountryClick }) => {
   const mountRef = useRef(null);
@@ -130,13 +131,14 @@ const InteractiveWorldMap = ({ onCountryClick }) => {
         return shapes;
     }
 
-    fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_countries.geojson')
-      .then(res => res.json())
-      .then(drawCountries)
-      .catch(err => {
-          console.error("Failed to load GeoJSON", err);
-          setLoading(false);
-      });
+    getCountriesGeoJSON().then(({ data, error }) => {
+      if (error) {
+        console.error("Failed to load GeoJSON", error);
+        setLoading(false);
+        return;
+      }
+      drawCountries(data);
+    });
 
     // Gestion du redimensionnement de la fenêtre
     function handleResize() {
