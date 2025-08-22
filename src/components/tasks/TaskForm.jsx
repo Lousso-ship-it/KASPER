@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { X, Zap } from "lucide-react";
+import PipelineBuilder from "./PipelineBuilder";
 
 export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
   const [formData, setFormData] = useState({
@@ -17,11 +19,21 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
       email_notifications: true
     }
   });
+  const initialNodes = [
+    { id: "1", type: "source", position: { x: 0, y: 50 }, data: { label: "Source" } },
+    { id: "2", type: "transform", position: { x: 200, y: 50 }, data: { label: "Transform" } },
+    { id: "3", type: "output", position: { x: 400, y: 50 }, data: { label: "Output" } }
+  ];
+  const initialEdges = [
+    { id: "e1-2", source: "1", target: "2" },
+    { id: "e2-3", source: "2", target: "3" }
+  ];
+  const [pipeline, setPipeline] = useState({ nodes: initialNodes, edges: initialEdges });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.title || !formData.type || !formData.category) return;
-    onSubmit(formData);
+    onSubmit({ ...formData, pipeline });
   };
 
   return (
@@ -110,7 +122,7 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
             {/* Fréquence */}
             <div>
               <label className="block text-sm font-bold text-[#a0a0a0] mb-2 font-mono uppercase tracking-wider">
-                Fréquence d'exécution
+                Fréquence d&apos;exécution
               </label>
               <Select value={formData.frequency} onValueChange={(value) => setFormData({...formData, frequency: value})}>
                 <SelectTrigger className="bg-[#1a1a1a] border-[#3a3a3a] text-white font-mono">
@@ -123,6 +135,14 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
                   <SelectItem value="quarterly" className="text-white font-mono">Trimestriel</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Pipeline */}
+            <div>
+              <label className="block text-sm font-bold text-[#a0a0a0] mb-2 font-mono uppercase tracking-wider">
+                Pipeline
+              </label>
+              <PipelineBuilder value={pipeline} onChange={setPipeline} />
             </div>
 
             {/* Actions */}
@@ -140,3 +160,14 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
     </div>
   );
 }
+
+TaskForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  selectedTemplate: PropTypes.shape({
+    title: PropTypes.string,
+    description: PropTypes.string,
+    type: PropTypes.string,
+    category: PropTypes.string,
+  }),
+};
