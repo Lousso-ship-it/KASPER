@@ -3,6 +3,6 @@ import { createClient } from '@base44/sdk';
 
 // Create a client with authentication required
 export const base44 = createClient({
-  appId: "6892058ac03f9a535b4f7648", 
+  appId: import.meta.env.VITE_BASE44_APP_ID,
   requiresAuth: true // Ensure authentication is required for all operations
 });
