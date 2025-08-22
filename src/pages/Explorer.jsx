@@ -5,6 +5,7 @@ import CountryDataPanel from '../components/explorer/CountryDataPanel';
 import ToolGDP from '../components/explorer/tools/ToolGDP';
 import ToolInflation from '../components/explorer/tools/ToolInflation';
 import ToolNews from '../components/explorer/tools/ToolNews';
+import IndicatorCatalog from '../components/explorer/IndicatorCatalog';
 import { AnimatePresence } from 'framer-motion';
 
 // Convertit le code ISO2 en emoji drapeau
@@ -50,6 +51,7 @@ export default function ExplorerPage() {
                     <InteractiveWorldMap onCountryClick={handleCountryClick} />
                 </div>
                 
+                <IndicatorCatalog />
                 {/* Outils opérationnels */}
                 <div className="flex-1 bg-[#2a2a2a] border border-[#3a3a3a] rounded-lg p-6">
                     {selectedCountry ? (

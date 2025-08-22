@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import {
   LineChart,
@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Document } from "@/api/entities";
+import prices from "@/data/prices.json";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -24,19 +25,22 @@ const defaultLayout = [
   { i: "table", x: 3, y: 4, w: 9, h: 2, type: "table" },
 ];
 
-const sampleData = [
-  { name: "Jan", value: 400, value2: 240 },
-  { name: "Feb", value: 300, value2: 139 },
-  { name: "Mar", value: 200, value2: 980 },
-  { name: "Apr", value: 278, value2: 390 },
-  { name: "May", value: 189, value2: 480 },
-];
+const chartDataFromPrices = (records) => {
+  const grouped = {};
+  records.forEach((r) => {
+    if (!grouped[r.symbol]) grouped[r.symbol] = { name: r.symbol };
+    grouped[r.symbol][r.source] = r.price;
+  });
+  return Object.values(grouped);
+};
 
 export default function MonitorPage() {
   const [dashboards, setDashboards] = useState([]);
   const [selected, setSelected] = useState(null);
   const [layout, setLayout] = useState(defaultLayout);
   const [title, setTitle] = useState("");
+  const chartData = useMemo(() => chartDataFromPrices(prices), []);
+  const firstPrice = chartData[0]?.pyth ?? chartData[0]?.yfinance ?? 0;
 
   useEffect(() => {
     loadDashboards();
@@ -115,24 +119,26 @@ export default function MonitorPage() {
       case "line":
         return (
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={sampleData}>
+            <LineChart data={chartData}>
               <CartesianGrid stroke="#ccc" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="value" stroke="#ff6b35" />
+              <Line type="monotone" dataKey="pyth" stroke="#ff6b35" />
+              <Line type="monotone" dataKey="yfinance" stroke="#8884d8" />
             </LineChart>
           </ResponsiveContainer>
         );
       case "bar":
         return (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={sampleData}>
+            <BarChart data={chartData}>
               <CartesianGrid stroke="#ccc" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="value2" fill="#ff6b35" />
+              <Bar dataKey="pyth" fill="#ff6b35" />
+              <Bar dataKey="yfinance" fill="#8884d8" />
             </BarChart>
           </ResponsiveContainer>
         );
@@ -141,7 +147,7 @@ export default function MonitorPage() {
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
               <div className="text-xl font-bold mb-2">KPI</div>
-              <div className="text-4xl font-bold">42</div>
+              <div className="text-4xl font-bold">{firstPrice.toFixed(2)}</div>
             </div>
           </div>
         );
@@ -156,13 +162,13 @@ export default function MonitorPage() {
                 </tr>
               </thead>
               <tbody>
-                {sampleData.map((row) => (
+                {chartData.map((row) => (
                   <tr
                     key={row.name}
                     className="border-t border-[var(--border-color)]"
                   >
                     <td className="p-1">{row.name}</td>
-                    <td className="p-1">{row.value}</td>
+                    <td className="p-1">{(row.pyth ?? row.yfinance)?.toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
