@@ -69,8 +69,10 @@ export default function TasksPage() {
 
   const handleCreateTask = async (taskData) => {
     try {
-      await Task.create({ // Changed from base44.entities.Task.create()
-        ...taskData,
+      const { outputDatasetId, ...rest } = taskData;
+      await Task.create({
+        ...rest,
+        output_dataset_id: outputDatasetId,
         next_execution: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       });
       setShowForm(false);
