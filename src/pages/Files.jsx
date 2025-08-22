@@ -17,6 +17,7 @@ import {
 import DocumentList from "../components/files/DocumentList";
 import FileCreationView from "../components/files/FileCreationView";
 import { UploadFile, ExtractDataFromUploadedFile } from "@/api/integrations";
+import TagFilter from "../components/files/TagFilter";
 
 export default function FilesPage() {
   const [documents, setDocuments] = useState([]);
@@ -27,6 +28,8 @@ export default function FilesPage() {
   const [selectedType, setSelectedType] = useState("all");
   const [sortBy, setSortBy] = useState("generation_date");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [availableTags, setAvailableTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,14 +42,20 @@ export default function FilesPage() {
   }, []);
 
   useEffect(() => {
+    if (isAuthenticated) {
+      loadDocuments(searchQuery);
+    }
+  }, [searchQuery, isAuthenticated]);
+
+  useEffect(() => {
     filterAndSortDocuments();
-  }, [documents, searchQuery, selectedCategory, selectedType, sortBy, sortOrder]);
+  }, [documents, selectedCategory, selectedType, sortBy, sortOrder, selectedTags]);
 
   const checkAuthAndLoadDocuments = async () => {
     try {
       await User.me();
       setIsAuthenticated(true);
-      await loadDocuments();
+      await loadDocuments(searchQuery);
     } catch (error) {
       setIsAuthenticated(false);
     } finally {
@@ -55,10 +64,15 @@ export default function FilesPage() {
     }
   };
 
-  const loadDocuments = async () => {
+  const loadDocuments = async (query = "") => {
     try {
-      const fetchedDocuments = await Document.list(); // Updated from base44.entities.Document.list()
+      const fetchedDocuments = query
+        ? await Document.list({ query })
+        : await Document.list();
       setDocuments(fetchedDocuments);
+      const tagsSet = new Set();
+      fetchedDocuments.forEach(doc => (doc.tags || []).forEach(tag => tagsSet.add(tag)));
+      setAvailableTags([...tagsSet]);
       if (selectedDocument) {
         const updatedSelectedDoc = fetchedDocuments.find(doc => doc.id === selectedDocument.id);
         setSelectedDocument(updatedSelectedDoc || null);
@@ -81,14 +95,11 @@ export default function FilesPage() {
 
   const filterAndSortDocuments = () => {
     let filtered = documents.filter(doc => {
-      const matchesSearch = !searchQuery ||
-        doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (doc.description && doc.description.toLowerCase().includes(searchQuery.toLowerCase()));
-
       const matchesCategory = selectedCategory === "all" || doc.category === selectedCategory;
       const matchesType = selectedType === "all" || doc.type === selectedType;
+      const matchesTags = selectedTags.length === 0 || (doc.tags && selectedTags.every(tag => doc.tags.includes(tag)));
 
-      return matchesSearch && matchesCategory && matchesType;
+      return matchesCategory && matchesType && matchesTags;
     });
 
     filtered.sort((a, b) => {
@@ -137,7 +148,7 @@ export default function FilesPage() {
         };
 
         const createdDoc = await Document.create(newDoc); // Updated from base44.entities.Document.create()
-        await loadDocuments();
+        await loadDocuments(searchQuery);
         setSelectedDocument(createdDoc);
       }
     } catch (error) {
@@ -162,7 +173,7 @@ export default function FilesPage() {
           newDoc.language = 'plaintext';
       }
       const createdDoc = await Document.create(newDoc); // Updated from base44.entities.Document.create()
-      await loadDocuments();
+      await loadDocuments(searchQuery);
       setSelectedDocument(createdDoc);
     } catch (error) {
       console.error("Document creation error:", error);
@@ -172,7 +183,7 @@ export default function FilesPage() {
   const updateDocument = async (docId, data) => {
     try {
       const updatedDoc = await Document.update(docId, data); // Updated from base44.entities.Document.update()
-      await loadDocuments();
+      await loadDocuments(searchQuery);
       setSelectedDocument(updatedDoc);
     } catch (error) {
       console.error("Update error:", error);
@@ -184,7 +195,7 @@ export default function FilesPage() {
       await Document.update(document.id, { // Updated from base44.entities.Document.update()
         is_favorite: !document.is_favorite
       });
-      await loadDocuments();
+      await loadDocuments(searchQuery);
     } catch (error) {
       console.error("Toggle favorite error:", error);
     }
@@ -196,7 +207,7 @@ export default function FilesPage() {
       if (selectedDocument && selectedDocument.id === documentId) {
         setSelectedDocument(null);
       }
-      await loadDocuments();
+      await loadDocuments(searchQuery);
     } catch (error) {
       console.error("Delete error:", error);
     }
@@ -212,6 +223,7 @@ export default function FilesPage() {
     setSortBy("generation_date");
     setSortOrder("desc");
     setSearchQuery("");
+    setSelectedTags([]);
   };
 
   // Fonctions utilitaires
@@ -267,7 +279,8 @@ export default function FilesPage() {
   const activeFiltersCount =
     (selectedCategory !== "all" ? 1 : 0) +
     (selectedType !== "all" ? 1 : 0) +
-    (searchQuery ? 1 : 0);
+    (searchQuery ? 1 : 0) +
+    selectedTags.length;
 
   return (
     <div className="h-full flex gap-4">
@@ -369,6 +382,12 @@ export default function FilesPage() {
                   <SelectItem value="generic" className="text-white font-mono">Générique/Upload</SelectItem>
                 </SelectContent>
               </Select>
+
+              <TagFilter
+                tags={availableTags}
+                selectedTags={selectedTags}
+                onChange={setSelectedTags}
+              />
 
               <div className="flex gap-2">
                 <Select value={sortBy} onValueChange={setSortBy}>
