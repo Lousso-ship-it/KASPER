@@ -69,10 +69,16 @@ export default function TasksPage() {
 
   const handleCreateTask = async (taskData) => {
     try {
-      await Task.create({ // Changed from base44.entities.Task.create()
-        ...taskData,
+      const { frequency, trigger, ...payload } = taskData;
+      const newTask = await Task.create({ // Changed from base44.entities.Task.create()
+        ...payload,
         next_execution: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       });
+
+      if (newTask?.id) {
+        await Task.schedule(newTask.id, { frequency, trigger });
+      }
+
       setShowForm(false);
       setSelectedTemplate(null);
       await loadTasks();

@@ -13,6 +13,7 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
     type: selectedTemplate?.type || "",
     category: selectedTemplate?.category || "",
     frequency: "daily",
+    trigger: "09:00",
     parameters: {
       email_notifications: true
     }
@@ -123,6 +124,20 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
                   <SelectItem value="quarterly" className="text-white font-mono">Trimestriel</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Heure d'exécution */}
+            <div>
+              <label className="block text-sm font-bold text-[#a0a0a0] mb-2 font-mono uppercase tracking-wider">
+                Heure d'exécution
+              </label>
+              <Input
+                type="time"
+                value={formData.trigger}
+                onChange={(e) => setFormData({ ...formData, trigger: e.target.value })}
+                className="bg-[#1a1a1a] border-[#3a3a3a] text-white font-mono"
+                required
+              />
             </div>
 
             {/* Actions */}
