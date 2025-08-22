@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { DocumentVersion } from '@/api/entities';
 import { format } from 'date-fns';
@@ -35,3 +36,7 @@ export default function VersionHistory({ documentId }) {
     </Card>
   );
 }
+
+VersionHistory.propTypes = {
+  documentId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
