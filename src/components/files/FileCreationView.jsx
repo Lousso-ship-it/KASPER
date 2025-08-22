@@ -1,31 +1,29 @@
-
-import React from 'react';
+/* eslint-disable react/prop-types */
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { FileText, FileCode, Upload, Loader2, Slash } from 'lucide-react';
+import { FileText, FileCode, Upload, Loader2 } from 'lucide-react';
 import StrategicGlobe3D from '../common/StrategicGlobe3D';
 import DocumentViewer from './DocumentViewer';
 
 const documentTypes = [
-    { 
-        type: 'report', 
-        icon: FileText, 
-        label: 'Document', 
+    {
+        type: 'report',
+        icon: FileText,
+        label: 'Document',
         color: 'text-blue-400 border-blue-500/30 hover:bg-blue-500/10'
     },
-    { 
-        type: 'code', 
-        icon: FileCode, 
-        label: 'Code', 
+    {
+        type: 'code',
+        icon: FileCode,
+        label: 'Code',
         color: 'text-green-400 border-green-500/30 hover:bg-green-500/10'
     }
 ];
 
-export default function FileCreationView({ onUploadClick, onCreateDocument, uploading, selectedDocument, onUpdate, onDelete }) {
-    
+export default function FileCreationView({ onUploadClick, onCreateDocument, uploading, selectedDocument, onUpdate, onDelete, canEdit, canDelete }) {
+
     // Si un document est sélectionné, afficher le visualiseur
     if (selectedDocument) {
-        return <DocumentViewer document={selectedDocument} onUpdate={onUpdate} onDelete={onDelete} />;
+        return <DocumentViewer document={selectedDocument} onUpdate={onUpdate} onDelete={onDelete} canEdit={canEdit} canDelete={canDelete} />;
     }
 
     return (
@@ -34,7 +32,7 @@ export default function FileCreationView({ onUploadClick, onCreateDocument, uplo
             <div className="h-80 w-full max-w-lg mx-auto mt-8 mb-12">
                 <StrategicGlobe3D height={320} />
             </div>
-            
+
             {/* Zone de création centrée */}
             <div className="flex-1 flex flex-col items-center justify-start space-y-8 max-w-sm mx-auto">
                 <div className="flex items-center justify-center gap-3">
@@ -42,7 +40,7 @@ export default function FileCreationView({ onUploadClick, onCreateDocument, uplo
                         Créer ou télécharger
                     </h2>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 w-full">
                     {documentTypes.map(({ type, icon: Icon, label, color }) => (
                         <Button
@@ -57,8 +55,8 @@ export default function FileCreationView({ onUploadClick, onCreateDocument, uplo
                     ))}
                 </div>
 
-                <Button 
-                    variant="outline" 
+                <Button
+                    variant="outline"
                     size="lg"
                     onClick={onUploadClick}
                     disabled={uploading}

@@ -1,12 +1,11 @@
-
-import React from 'react';
+/* eslint-disable react/prop-types */
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, Shield, AlertTriangle, Download, Star, StarOff, Trash2, FileCode } from 'lucide-react';
+import { FileText, Download, Star, StarOff, Trash2, FileCode } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-export default function DocumentList({ documents, onSelect, selectedId, onToggleFavorite, onDelete, loading }) {
-    
+export default function DocumentList({ documents, onSelect, selectedId, onToggleFavorite, onDelete, loading, canDelete }) {
+
     const getTypeIcon = (type) => {
         switch (type) {
           case 'report': return FileText;
@@ -57,11 +56,11 @@ export default function DocumentList({ documents, onSelect, selectedId, onToggle
                 const isSelected = doc.id === selectedId;
 
                 return (
-                    <div 
+                    <div
                         key={doc.id}
                         className={`group relative p-3 rounded-md cursor-pointer transition-all duration-200 border ${
-                            isSelected 
-                                ? 'bg-[#ff6b35]/20 border-[#ff6b35]/50' 
+                            isSelected
+                                ? 'bg-[#ff6b35]/20 border-[#ff6b35]/50'
                                 : 'border-transparent hover:bg-[#3a3a3a]/50 hover:border-[#3a3a3a]'
                         }`}
                     >
@@ -75,8 +74,8 @@ export default function DocumentList({ documents, onSelect, selectedId, onToggle
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-xs text-[#a0a0a0] font-mono">
-                                        {doc.generation_date 
-                                            ? formatDistanceToNow(new Date(doc.generation_date), { addSuffix: true, locale: fr }) 
+                                        {doc.generation_date
+                                            ? formatDistanceToNow(new Date(doc.generation_date), { addSuffix: true, locale: fr })
                                             : 'Date inconnue'
                                         }
                                     </p>
@@ -107,7 +106,7 @@ export default function DocumentList({ documents, onSelect, selectedId, onToggle
                             >
                                 {doc.is_favorite ? <Star className="w-3 h-3 fill-current" /> : <StarOff className="w-3 h-3" />}
                             </Button>
-                            
+
                             {doc.file_url && (
                                 <Button
                                     variant="ghost"
@@ -121,20 +120,22 @@ export default function DocumentList({ documents, onSelect, selectedId, onToggle
                                     <Download className="w-3 h-3" />
                                 </Button>
                             )}
-                            
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (confirm('Êtes-vous sûr de vouloir supprimer ce document ?')) {
-                                        onDelete(doc.id);
-                                    }
-                                }}
-                                className="h-6 w-6 text-[#a0a0a0] hover:text-red-400"
-                            >
-                                <Trash2 className="w-3 h-3" />
-                            </Button>
+
+                            {canDelete && onDelete && (
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (confirm('Êtes-vous sûr de vouloir supprimer ce document ?')) {
+                                            onDelete(doc.id);
+                                        }
+                                    }}
+                                    className="h-6 w-6 text-[#a0a0a0] hover:text-red-400"
+                                >
+                                    <Trash2 className="w-3 h-3" />
+                                </Button>
+                            )}
                         </div>
                     </div>
                 );

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Document } from "@/api/entities"; // Changed from base44
 import { User } from "@/api/entities";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import DocumentList from "../components/files/DocumentList";
 import FileCreationView from "../components/files/FileCreationView";
-import { UploadFile, ExtractDataFromUploadedFile } from "@/api/integrations";
+import { UploadFile } from "@/api/integrations";
 
 export default function FilesPage() {
   const [documents, setDocuments] = useState([]);
@@ -32,6 +32,7 @@ export default function FilesPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -44,10 +45,11 @@ export default function FilesPage() {
 
   const checkAuthAndLoadDocuments = async () => {
     try {
-      await User.me();
+      const me = await User.me();
       setIsAuthenticated(true);
+      setUserRole(me.role);
       await loadDocuments();
-    } catch (error) {
+    } catch {
       setIsAuthenticated(false);
     } finally {
       setAuthChecked(true);
@@ -264,6 +266,7 @@ export default function FilesPage() {
     );
   }
 
+  const isAdmin = userRole === User.role.ADMIN;
   const activeFiltersCount =
     (selectedCategory !== "all" ? 1 : 0) +
     (selectedType !== "all" ? 1 : 0) +
@@ -412,6 +415,7 @@ export default function FilesPage() {
             onToggleFavorite={toggleFavorite}
             onDelete={deleteDocument}
             loading={loading}
+            canDelete={isAdmin}
           />
         </div>
       </div>
@@ -425,6 +429,8 @@ export default function FilesPage() {
           selectedDocument={selectedDocument}
           onUpdate={updateDocument}
           onDelete={deleteDocument}
+          canEdit={isAdmin}
+          canDelete={isAdmin}
         />
         <input
           type="file"
