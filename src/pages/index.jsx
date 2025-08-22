@@ -14,16 +14,17 @@ import Markets from "./Markets";
 
 import News from "./News";
 
-import Explorer from "./Explorer";
-
 import Tasks from "./Tasks";
 
 import Files from "./Files";
 
-import Terminal from "./Terminal";
 import Monitor from "./Monitor";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+
+const Explorer = lazy(() => import('./Explorer'));
+const Terminal = lazy(() => import('./Terminal'));
 
 const PAGES = {
     
@@ -72,7 +73,8 @@ function PagesContent() {
     
     return (
         <Layout currentPageName={currentPage}>
-            <Routes>            
+            <Suspense fallback={<div>Loading...</div>}>
+                <Routes>
                 
                     <Route path="/" element={<Intelligence />} />
                 
@@ -99,8 +101,9 @@ function PagesContent() {
                 
                 <Route path="/Terminal" element={<Terminal />} />
                 <Route path="/Monitor" element={<Monitor />} />
-                
-            </Routes>
+
+                </Routes>
+            </Suspense>
         </Layout>
     );
 }
