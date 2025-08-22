@@ -10,6 +10,8 @@ import MonetaryPolicy from "../components/economic/MonetaryPolicy";
 import FiscalBudget from "../components/economic/FiscalBudget";
 import InternationalTrade from "../components/economic/InternationalTrade";
 import EconomicCalendar from "../components/economic/EconomicCalendar";
+import { useWorldBankIndicator } from "@/hooks/use-world-bank-indicator";
+import { useIMFSeries } from "@/hooks/use-imf-series";
 
 const categoryInfo = {
   title: "Analyse Économique",
@@ -62,6 +64,8 @@ const NewsFeedCard = ({ item }) => (
 
 export default function EconomicPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const { data: wbData, loading: wbLoading, error: wbError } = useWorldBankIndicator("FRA", "NY.GDP.MKTP.KD");
+  const { data: imfData, loading: imfLoading, error: imfError } = useIMFSeries("IFS/FRA.NGDP_RPCH.A", { startPeriod: "2020", endPeriod: "2024" });
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -101,6 +105,32 @@ export default function EconomicPage() {
       </Card>
       
       <EconomicCalendar />
+
+      <Card className="bg-[#171717] border-[#2a2a2a]">
+        <CardHeader>
+          <CardTitle className="text-lg text-[#e5e5e5]">Exemples d'API</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 text-sm text-[#a3a3a3]">
+          <div>
+            <p className="font-medium mb-2">World Bank GDP (France)</p>
+            {wbLoading ? (
+              <p>Chargement...</p>
+            ) : (
+              <pre className="overflow-x-auto">{JSON.stringify(wbData?.[0], null, 2)}</pre>
+            )}
+            {wbError && <p className="text-red-500">{wbError.message}</p>}
+          </div>
+          <div>
+            <p className="font-medium mb-2">IMF GDP Growth (France)</p>
+            {imfLoading ? (
+              <p>Chargement...</p>
+            ) : (
+              <pre className="overflow-x-auto">{JSON.stringify(imfData?.CompactData?.DataSet?.Series?.[0], null, 2)}</pre>
+            )}
+            {imfError && <p className="text-red-500">{imfError.message}</p>}
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="space-y-6">
         <h3 className="text-2xl font-semibold text-[#e5e5e5]">Fil d'actualité économique</h3>
