@@ -1,30 +1,21 @@
 import Layout from "./Layout.jsx";
 
-import Intelligence from "./Intelligence";
-
-import Admin from "./Admin";
-
-import SocioDemographic from "./SocioDemographic";
-
-import Economic from "./Economic";
-
-import Financial from "./Financial";
-
-import Markets from "./Markets";
-
-import News from "./News";
-
-import Explorer from "./Explorer";
-
-import Tasks from "./Tasks";
-
-import Files from "./Files";
-
-import Terminal from "./Terminal";
-import Monitor from "./Monitor";
-import Dashboard from "./Dashboard";
-
+import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+
+const Intelligence = lazy(() => import('./Intelligence'));
+const Admin = lazy(() => import('./Admin'));
+const SocioDemographic = lazy(() => import('./SocioDemographic'));
+const Economic = lazy(() => import('./Economic'));
+const Financial = lazy(() => import('./Financial'));
+const Markets = lazy(() => import('./Markets'));
+const News = lazy(() => import('./News'));
+const Explorer = lazy(() => import('./Explorer'));
+const Tasks = lazy(() => import('./Tasks'));
+const Files = lazy(() => import('./Files'));
+const Terminal = lazy(() => import('./Terminal'));
+const Monitor = lazy(() => import('./Monitor'));
+const Dashboard = lazy(() => import('./Dashboard'));
 
 const PAGES = {
     
@@ -74,36 +65,24 @@ function PagesContent() {
     
     return (
         <Layout currentPageName={currentPage}>
-            <Routes>            
-                
+            <Suspense fallback={<div>Loading...</div>}>
+                <Routes>
                     <Route path="/" element={<Intelligence />} />
-                
-                
-                <Route path="/Intelligence" element={<Intelligence />} />
-                
-                <Route path="/Admin" element={<Admin />} />
-                
-                <Route path="/SocioDemographic" element={<SocioDemographic />} />
-                
-                <Route path="/Economic" element={<Economic />} />
-                
-                <Route path="/Financial" element={<Financial />} />
-                
-                <Route path="/Markets" element={<Markets />} />
-                
-                <Route path="/News" element={<News />} />
-                
-                <Route path="/Explorer" element={<Explorer />} />
-                
-                <Route path="/Tasks" element={<Tasks />} />
-                
-                <Route path="/Files" element={<Files />} />
-                
-                <Route path="/Terminal" element={<Terminal />} />
-                <Route path="/Monitor" element={<Monitor />} />
-                <Route path="/Dashboard" element={<Dashboard />} />
-                
-            </Routes>
+                    <Route path="/Intelligence" element={<Intelligence />} />
+                    <Route path="/Admin" element={<Admin />} />
+                    <Route path="/SocioDemographic" element={<SocioDemographic />} />
+                    <Route path="/Economic" element={<Economic />} />
+                    <Route path="/Financial" element={<Financial />} />
+                    <Route path="/Markets" element={<Markets />} />
+                    <Route path="/News" element={<News />} />
+                    <Route path="/Explorer" element={<Explorer />} />
+                    <Route path="/Tasks" element={<Tasks />} />
+                    <Route path="/Files" element={<Files />} />
+                    <Route path="/Terminal" element={<Terminal />} />
+                    <Route path="/Monitor" element={<Monitor />} />
+                    <Route path="/Dashboard" element={<Dashboard />} />
+                </Routes>
+            </Suspense>
         </Layout>
     );
 }
