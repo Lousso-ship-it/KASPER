@@ -1,20 +1,10 @@
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Task } from "@/api/entities"; // Changed from base44 client to direct Task entity import
 import { User } from "@/api/entities";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { 
-  Plus, 
-  Search,
-  Settings,
-  LogIn,
-  Clock,
-  Play,
-  Pause,
-  MoreVertical
-} from "lucide-react";
+import { Plus, Search, Settings, LogIn } from "lucide-react";
 import TaskForm from "../components/tasks/TaskForm";
 import TaskCard from "../components/tasks/TaskCard";
 import TaskTemplates from "../components/tasks/TaskTemplates";
@@ -29,11 +19,19 @@ export default function TasksPage() {
   const [authChecked, setAuthChecked] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
 
-  useEffect(() => {
-    checkAuthAndLoadTasks();
+  const loadTasks = useCallback(async () => {
+    try {
+      const fetchedTasks = await Task.list(); // Changed from base44.entities.Task.list()
+      setTasks(fetchedTasks);
+    } catch (error) {
+      console.error("Error loading tasks:", error);
+      if (error.message && error.message.includes("logged in")) {
+        setIsAuthenticated(false);
+      }
+    }
   }, []);
 
-  const checkAuthAndLoadTasks = async () => {
+  const checkAuthAndLoadTasks = useCallback(async () => {
     try {
       await User.me();
       setIsAuthenticated(true);
@@ -45,19 +43,11 @@ export default function TasksPage() {
       setAuthChecked(true);
       setLoading(false);
     }
-  };
+  }, [loadTasks]);
 
-  const loadTasks = async () => {
-    try {
-      const fetchedTasks = await Task.list(); // Changed from base44.entities.Task.list()
-      setTasks(fetchedTasks);
-    } catch (error) {
-      console.error("Error loading tasks:", error);
-      if (error.message && error.message.includes("logged in")) {
-        setIsAuthenticated(false);
-      }
-    }
-  };
+  useEffect(() => {
+    checkAuthAndLoadTasks();
+  }, [checkAuthAndLoadTasks]);
 
   const handleLogin = async () => {
     try {
@@ -163,9 +153,9 @@ export default function TasksPage() {
             <h3 className="text-xl font-bold text-white font-mono">
               Commencez par ajouter une tâche
             </h3>
-            <p className="text-[#a0a0a0] font-mono text-base max-w-md">
-              Planifier une tâche pour automatiser des actions et recevoir des rapports lorsqu'elles sont terminées.
-            </p>
+      <p className="text-[#a0a0a0] font-mono text-base max-w-md">
+        Planifier une tâche pour automatiser des actions et recevoir des rapports lorsqu&apos;elles sont terminées.
+      </p>
           </div>
           
           <TaskTemplates onSelect={handleTemplateSelect} />

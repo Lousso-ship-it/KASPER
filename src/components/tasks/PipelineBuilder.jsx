@@ -1,4 +1,5 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
+import PropTypes from "prop-types";
 import ReactFlow, {
   addEdge,
   applyEdgeChanges,
@@ -50,3 +51,11 @@ export default function PipelineBuilder({ value, onChange }) {
     </div>
   );
 }
+
+PipelineBuilder.propTypes = {
+  value: PropTypes.shape({
+    nodes: PropTypes.array.isRequired,
+    edges: PropTypes.array.isRequired,
+  }).isRequired,
+  onChange: PropTypes.func.isRequired,
+};

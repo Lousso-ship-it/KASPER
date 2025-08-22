@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { Handle, Position } from "reactflow";
 
 export default function TransformNode({ data }) {
@@ -10,3 +10,9 @@ export default function TransformNode({ data }) {
     </div>
   );
 }
+
+TransformNode.propTypes = {
+  data: PropTypes.shape({
+    label: PropTypes.string,
+  }),
+};

@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { Handle, Position } from "reactflow";
 
 export default function SourceNode({ data }) {
@@ -9,3 +9,9 @@ export default function SourceNode({ data }) {
     </div>
   );
 }
+
+SourceNode.propTypes = {
+  data: PropTypes.shape({
+    label: PropTypes.string,
+  }),
+};
