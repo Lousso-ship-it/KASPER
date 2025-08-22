@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Edit, Save, Trash2, X, FileCode, FileText, Image as ImageIcon, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import VersionHistory from './VersionHistory';
 
 const QuillModules = {
   toolbar: [
@@ -89,55 +90,58 @@ export default function DocumentViewer({ document, onUpdate, onDelete }) {
     };
 
     return (
-        <Card className="tactical-card h-full flex flex-col">
-            <CardHeader className="flex-row items-center justify-between">
-                <div>
-                    {isEditing ? (
-                        <input 
-                          value={title}
-                          onChange={(e) => setTitle(e.target.value)}
-                          className="text-xl font-bold text-white font-mono bg-transparent border-b border-dotted border-[#3a3a3a] focus:outline-none focus:border-solid"
-                        />
-                    ) : (
-                        <CardTitle className="text-white font-mono tracking-wide text-xl">{document.title}</CardTitle>
-                    )}
-                    <p className="text-xs text-[#a0a0a0] font-mono mt-1">
-                        Créé le {format(new Date(document.created_date), 'd MMMM yyyy', { locale: fr })}
-                    </p>
-                </div>
-                <div className="flex items-center gap-2">
-                    {isEditing ? (
-                        <>
-                            <Button size="sm" onClick={handleSave} className="tactical-button"><Save className="w-4 h-4 mr-2" /> Enregistrer</Button>
-                            <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)}><X className="w-4 h-4" /></Button>
-                        </>
-                    ) : (
-                        <Button size="sm" variant="outline" onClick={() => setIsEditing(true)} className="border-[#3a3a3a] text-[#a0a0a0] hover:bg-[#3a3a3a] hover:text-white">
-                            <Edit className="w-4 h-4 mr-2" /> Éditer
-                        </Button>
-                    )}
-                    <Button size="icon" variant="destructive" onClick={() => onDelete(document.id)}>
-                        <Trash2 className="w-4 h-4" />
-                    </Button>
-                </div>
-            </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto p-6 flex flex-col">
-                {isEditing ? (
-                    <div className="flex-1 h-full">
-                        {renderEditor()}
+        <div className="space-y-4">
+            <Card className="tactical-card h-full flex flex-col">
+                <CardHeader className="flex-row items-center justify-between">
+                    <div>
+                        {isEditing ? (
+                            <input
+                              value={title}
+                              onChange={(e) => setTitle(e.target.value)}
+                              className="text-xl font-bold text-white font-mono bg-transparent border-b border-dotted border-[#3a3a3a] focus:outline-none focus:border-solid"
+                            />
+                        ) : (
+                            <CardTitle className="text-white font-mono tracking-wide text-xl">{document.title}</CardTitle>
+                        )}
+                        <p className="text-xs text-[#a0a0a0] font-mono mt-1">
+                            Créé le {format(new Date(document.created_date), 'd MMMM yyyy', { locale: fr })}
+                        </p>
                     </div>
-                ) : (
-                    document.file_url ? renderFilePreview() : (
-                        <div className="prose prose-invert max-w-none text-white font-mono whitespace-pre-wrap">
-                            {document.type === 'code' ? <pre><code>{content}</code></pre> : content}
+                    <div className="flex items-center gap-2">
+                        {isEditing ? (
+                            <>
+                                <Button size="sm" onClick={handleSave} className="tactical-button"><Save className="w-4 h-4 mr-2" /> Enregistrer</Button>
+                                <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)}><X className="w-4 h-4" /></Button>
+                            </>
+                        ) : (
+                            <Button size="sm" variant="outline" onClick={() => setIsEditing(true)} className="border-[#3a3a3a] text-[#a0a0a0] hover:bg-[#3a3a3a] hover:text-white">
+                                <Edit className="w-4 h-4 mr-2" /> Éditer
+                            </Button>
+                        )}
+                        <Button size="icon" variant="destructive" onClick={() => onDelete(document.id)}>
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
+                    </div>
+                </CardHeader>
+                <CardContent className="flex-1 overflow-y-auto p-6 flex flex-col">
+                    {isEditing ? (
+                        <div className="flex-1 h-full">
+                            {renderEditor()}
                         </div>
-                    )
-                )}
-            </CardContent>
-            <CardFooter>
-                 <Badge variant="outline" className="border-[#3a3a3a] bg-[#1a1a1a] text-[#a0a0a0] font-mono">{document.type}</Badge>
-                 <Badge variant="outline" className="border-[#3a3a3a] bg-[#1a1a1a] text-[#a0a0a0] font-mono ml-2">{document.category}</Badge>
-            </CardFooter>
-        </Card>
+                    ) : (
+                        document.file_url ? renderFilePreview() : (
+                            <div className="prose prose-invert max-w-none text-white font-mono whitespace-pre-wrap">
+                                {document.type === 'code' ? <pre><code>{content}</code></pre> : content}
+                            </div>
+                        )
+                    )}
+                </CardContent>
+                <CardFooter>
+                     <Badge variant="outline" className="border-[#3a3a3a] bg-[#1a1a1a] text-[#a0a0a0] font-mono">{document.type}</Badge>
+                     <Badge variant="outline" className="border-[#3a3a3a] bg-[#1a1a1a] text-[#a0a0a0] font-mono ml-2">{document.category}</Badge>
+                </CardFooter>
+            </Card>
+            <VersionHistory documentId={document.id} />
+        </div>
     );
 }
