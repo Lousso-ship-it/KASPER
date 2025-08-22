@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
+import { User } from "@/api/entities";
+
 import Layout from "./Layout.jsx";
 
 import Intelligence from "./Intelligence";
@@ -22,8 +26,7 @@ import Files from "./Files";
 
 import Terminal from "./Terminal";
 import Monitor from "./Monitor";
-
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import Login from "./Login";
 
 const PAGES = {
     
@@ -69,37 +72,54 @@ function _getCurrentPage(url) {
 function PagesContent() {
     const location = useLocation();
     const currentPage = _getCurrentPage(location.pathname);
-    
+    const [isAuthenticated, setIsAuthenticated] = useState(null);
+
+    useEffect(() => {
+        async function checkAuth() {
+            try {
+                await User.me();
+                setIsAuthenticated(true);
+            } catch {
+                setIsAuthenticated(false);
+            }
+        }
+        checkAuth();
+    }, []);
+
+    if (isAuthenticated === false && location.pathname !== "/Intelligence" && location.pathname !== "/Login") {
+        return <Navigate to="/Intelligence" replace />;
+    }
+
     return (
         <Layout currentPageName={currentPage}>
-            <Routes>            
-                
-                    <Route path="/" element={<Intelligence />} />
-                
-                
+            <Routes>
+
+                <Route path="/" element={<Intelligence />} />
+
                 <Route path="/Intelligence" element={<Intelligence />} />
-                
+
                 <Route path="/Admin" element={<Admin />} />
-                
+
                 <Route path="/SocioDemographic" element={<SocioDemographic />} />
-                
+
                 <Route path="/Economic" element={<Economic />} />
-                
+
                 <Route path="/Financial" element={<Financial />} />
-                
+
                 <Route path="/Markets" element={<Markets />} />
-                
+
                 <Route path="/News" element={<News />} />
-                
+
                 <Route path="/Explorer" element={<Explorer />} />
-                
+
                 <Route path="/Tasks" element={<Tasks />} />
-                
+
                 <Route path="/Files" element={<Files />} />
-                
+
                 <Route path="/Terminal" element={<Terminal />} />
                 <Route path="/Monitor" element={<Monitor />} />
-                
+                <Route path="/Login" element={<Login />} />
+
             </Routes>
         </Layout>
     );
