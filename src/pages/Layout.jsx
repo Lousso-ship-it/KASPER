@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AnimatedBackground from "../components/common/AnimatedBackground";
+import GlobalSearch from "../components/common/GlobalSearch";
 
 const mainNavItems = [
     { title: 'CHAT', href: createPageUrl('Intelligence'), icon: Search },
@@ -152,6 +153,7 @@ export default function Layout({ children }) {
 
             {/* Contenu Principal */}
             <main className="relative z-10 flex-1 overflow-y-auto bg-transparent p-4 sm:p-6 lg:p-8">
+                 <GlobalSearch />
                  {children}
             </main>
         </div>
