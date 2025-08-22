@@ -1,109 +1,50 @@
 import Layout from "./Layout.jsx";
 
-import Intelligence from "./Intelligence";
-
-import Admin from "./Admin";
-
-import SocioDemographic from "./SocioDemographic";
-
-import Economic from "./Economic";
-
-import Financial from "./Financial";
-
-import Markets from "./Markets";
-
-import News from "./News";
-
-import Explorer from "./Explorer";
-
-import Tasks from "./Tasks";
-
-import Files from "./Files";
-
-import Terminal from "./Terminal";
-import Monitor from "./Monitor";
-import Dashboard from "./Dashboard";
-
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 const PAGES = {
-    
-    Intelligence: Intelligence,
-    
-    Admin: Admin,
-    
-    SocioDemographic: SocioDemographic,
-    
-    Economic: Economic,
-    
-    Financial: Financial,
-    
-    Markets: Markets,
-    
-    News: News,
-    
-    Explorer: Explorer,
-    
-    Tasks: Tasks,
-    
-    Files: Files,
-    
-    Terminal: Terminal,
-    Monitor: Monitor,
-    Dashboard: Dashboard,
-    
+    Intelligence: lazy(() => import('./Intelligence')),
+    Admin: lazy(() => import('./Admin')),
+    SocioDemographic: lazy(() => import('./SocioDemographic')),
+    Economic: lazy(() => import('./Economic')),
+    Financial: lazy(() => import('./Financial')),
+    Markets: lazy(() => import('./Markets')),
+    News: lazy(() => import('./News')),
+    Explorer: lazy(() => import('./Explorer')),
+    Tasks: lazy(() => import('./Tasks')),
+    Files: lazy(() => import('./Files')),
+    Terminal: lazy(() => import('./Terminal')),
+    Monitor: lazy(() => import('./Monitor')),
+    Dashboard: lazy(() => import('./Dashboard')),
+};
+
+function useCurrentPage() {
+    const { pathname } = useLocation();
+    const segment = pathname.split('/').filter(Boolean)[0] || '';
+    const match = Object.keys(PAGES).find(
+        page => page.toLowerCase() === segment.toLowerCase()
+    );
+    return match || Object.keys(PAGES)[0];
 }
 
-function _getCurrentPage(url) {
-    if (url.endsWith('/')) {
-        url = url.slice(0, -1);
-    }
-    let urlLastPart = url.split('/').pop();
-    if (urlLastPart.includes('?')) {
-        urlLastPart = urlLastPart.split('?')[0];
-    }
-
-    const pageName = Object.keys(PAGES).find(page => page.toLowerCase() === urlLastPart.toLowerCase());
-    return pageName || Object.keys(PAGES)[0];
-}
-
-// Create a wrapper component that uses useLocation inside the Router context
 function PagesContent() {
-    const location = useLocation();
-    const currentPage = _getCurrentPage(location.pathname);
-    
+    const currentPage = useCurrentPage();
+    const defaultPage = Object.keys(PAGES)[0];
+
     return (
         <Layout currentPageName={currentPage}>
-            <Routes>            
-                
-                    <Route path="/" element={<Intelligence />} />
-                
-                
-                <Route path="/Intelligence" element={<Intelligence />} />
-                
-                <Route path="/Admin" element={<Admin />} />
-                
-                <Route path="/SocioDemographic" element={<SocioDemographic />} />
-                
-                <Route path="/Economic" element={<Economic />} />
-                
-                <Route path="/Financial" element={<Financial />} />
-                
-                <Route path="/Markets" element={<Markets />} />
-                
-                <Route path="/News" element={<News />} />
-                
-                <Route path="/Explorer" element={<Explorer />} />
-                
-                <Route path="/Tasks" element={<Tasks />} />
-                
-                <Route path="/Files" element={<Files />} />
-                
-                <Route path="/Terminal" element={<Terminal />} />
-                <Route path="/Monitor" element={<Monitor />} />
-                <Route path="/Dashboard" element={<Dashboard />} />
-                
-            </Routes>
+            <Suspense fallback={<div>Loading...</div>}>
+                <Routes>
+                    {Object.entries(PAGES).map(([name, Component]) => (
+                        <Route key={name} path={`/${name}`} element={<Component />} />
+                    ))}
+                    <Route
+                        path="/"
+                        element={<Navigate to={`/${defaultPage}`} replace />}
+                    />
+                </Routes>
+            </Suspense>
         </Layout>
     );
 }
