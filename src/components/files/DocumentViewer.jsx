@@ -4,6 +4,7 @@ import 'react-quill/dist/quill.snow.css';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Edit, Save, Trash2, X, FileCode, FileText, Image as ImageIcon, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -30,16 +31,18 @@ export default function DocumentViewer({ document, onUpdate, onDelete }) {
     const [title, setTitle] = useState(document.title);
     const [content, setContent] = useState(document.content || "");
     const [language, setLanguage] = useState(document.language || "");
+    const [tags, setTags] = useState(document.tags || []);
 
     useEffect(() => {
         setTitle(document.title);
         setContent(document.content || "");
         setLanguage(document.language || "");
-        setIsEditing(false); 
+        setTags(document.tags || []);
+        setIsEditing(false);
     }, [document]);
 
     const handleSave = () => {
-        const updatedData = { title, content };
+        const updatedData = { title, content, tags };
         if (document.type === 'code') {
             updatedData.language = language;
         }
@@ -134,9 +137,27 @@ export default function DocumentViewer({ document, onUpdate, onDelete }) {
                     )
                 )}
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex flex-wrap items-center gap-2">
                  <Badge variant="outline" className="border-[#3a3a3a] bg-[#1a1a1a] text-[#a0a0a0] font-mono">{document.type}</Badge>
-                 <Badge variant="outline" className="border-[#3a3a3a] bg-[#1a1a1a] text-[#a0a0a0] font-mono ml-2">{document.category}</Badge>
+                 <Badge variant="outline" className="border-[#3a3a3a] bg-[#1a1a1a] text-[#a0a0a0] font-mono">{document.category}</Badge>
+                 {isEditing ? (
+                    <Input
+                        value={tags.join(', ')}
+                        onChange={(e) => setTags(e.target.value.split(',').map(t => t.trim()).filter(Boolean))}
+                        placeholder="Tags (séparés par des virgules)"
+                        className="bg-[#1a1a1a] border-[#3a3a3a] text-white font-mono h-8"
+                    />
+                 ) : (
+                    tags.map(tag => (
+                        <Badge
+                            key={tag}
+                            variant="outline"
+                            className="border-[#3a3a3a] bg-[#1a1a1a] text-[#a0a0a0] font-mono"
+                        >
+                            {tag}
+                        </Badge>
+                    ))
+                 )}
             </CardFooter>
         </Card>
     );
