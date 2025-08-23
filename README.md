@@ -13,7 +13,8 @@ KASPER is a Vite + React application providing an integrated analytics platform.
 ## Development
 ```bash
 npm install
-npm run dev
+npm run api # start the API server on http://localhost:3000
+npm run dev  # start the front-end at http://localhost:5173
 ```
 
 ## Build
