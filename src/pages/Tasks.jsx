@@ -1,19 +1,12 @@
 
 import React, { useState, useEffect } from "react";
-import { Task } from "@/api/entities"; // Changed from base44 client to direct Task entity import
-import { User } from "@/api/entities";
+import { Task } from "@/api/entities";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { 
-  Plus, 
+import {
+  Plus,
   Search,
-  Settings,
-  LogIn,
-  Clock,
-  Play,
-  Pause,
-  MoreVertical
+  Settings
 } from "lucide-react";
 import TaskForm from "../components/tasks/TaskForm";
 import TaskCard from "../components/tasks/TaskCard";
@@ -25,45 +18,21 @@ export default function TasksPage() {
   const [showTemplates, setShowTemplates] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
 
   useEffect(() => {
-    checkAuthAndLoadTasks();
+    loadTasks();
   }, []);
-
-  const checkAuthAndLoadTasks = async () => {
-    try {
-      await User.me();
-      setIsAuthenticated(true);
-      await loadTasks();
-    } catch (error) {
-      console.log("Authentication check:", error.message);
-      setIsAuthenticated(false);
-    } finally {
-      setAuthChecked(true);
-      setLoading(false);
-    }
-  };
 
   const loadTasks = async () => {
     try {
-      const fetchedTasks = await Task.list(); // Changed from base44.entities.Task.list()
+      setLoading(true);
+      const fetchedTasks = await Task.list();
       setTasks(fetchedTasks);
     } catch (error) {
       console.error("Error loading tasks:", error);
-      if (error.message && error.message.includes("logged in")) {
-        setIsAuthenticated(false);
-      }
-    }
-  };
-
-  const handleLogin = async () => {
-    try {
-      await User.login();
-    } catch (error) {
-      console.error("Login error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,7 +54,7 @@ export default function TasksPage() {
 
   const toggleTaskStatus = async (task) => {
     try {
-      await Task.update(task.id, { // Changed from base44.entities.Task.update()
+      await Task.update(task.id, {
         is_active: !task.is_active
       });
       await loadTasks();
@@ -104,35 +73,6 @@ export default function TasksPage() {
     !searchQuery || task.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (!authChecked) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="w-8 h-8 border-2 border-[#ff6b35] border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full space-y-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-white font-mono tracking-wider">TÂCHES</h1>
-          <p className="text-[#a0a0a0] text-lg font-mono max-w-2xl">
-            Planifiez et automatisez vos analyses pour recevoir des rapports
-          </p>
-        </div>
-        
-        <div className="p-16 text-center bg-[#2a2a2a] border border-[#3a3a3a]">
-          <LogIn className="w-16 h-16 mx-auto mb-6 text-[#ff6b35]" />
-          <h3 className="text-2xl font-bold text-white mb-4 font-mono">CONNEXION REQUISE</h3>
-          <Button onClick={handleLogin} className="tactical-button h-14 px-8">
-            <LogIn className="w-6 h-6 mr-3" />
-            SE CONNECTER
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="h-full">

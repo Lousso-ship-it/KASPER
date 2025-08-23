@@ -1,13 +1,11 @@
 
 import React, { useState, useEffect, useRef } from "react";
-import { Document } from "@/api/entities"; // Changed from base44
-import { User } from "@/api/entities";
+import { Document } from "@/api/entities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Search,
-  LogIn,
   Filter,
   Plus,
   SortDesc,
@@ -32,40 +30,20 @@ export default function FilesPage() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    checkAuthAndLoadDocuments();
-  }, []);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadDocuments(searchQuery);
-    }
-  }, [searchQuery, isAuthenticated]);
+    loadDocuments(searchQuery);
+  }, [searchQuery]);
 
   useEffect(() => {
     filterAndSortDocuments();
   }, [documents, selectedCategory, selectedType, sortBy, sortOrder, selectedTags]);
 
-  const checkAuthAndLoadDocuments = async () => {
-    try {
-      await User.me();
-      setIsAuthenticated(true);
-      await loadDocuments(searchQuery);
-    } catch (error) {
-      setIsAuthenticated(false);
-    } finally {
-      setAuthChecked(true);
-      setLoading(false);
-    }
-  };
-
   const loadDocuments = async (query = "") => {
     try {
+      setLoading(true);
       const fetchedDocuments = query
         ? await Document.list({ query })
         : await Document.list();
@@ -79,17 +57,8 @@ export default function FilesPage() {
       }
     } catch (error) {
       console.error("Error loading documents:", error);
-      if (error.message && error.message.includes("logged in")) {
-        setIsAuthenticated(false);
-      }
-    }
-  };
-
-  const handleLogin = async () => {
-    try {
-      await User.login();
-    } catch (error) {
-      console.error("Login error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -147,7 +116,7 @@ export default function FilesPage() {
           generation_date: new Date().toISOString()
         };
 
-        const createdDoc = await Document.create(newDoc); // Updated from base44.entities.Document.create()
+        const createdDoc = await Document.create(newDoc);
         await loadDocuments(searchQuery);
         setSelectedDocument(createdDoc);
       }
@@ -172,7 +141,7 @@ export default function FilesPage() {
       if (documentType === 'code') {
           newDoc.language = 'plaintext';
       }
-      const createdDoc = await Document.create(newDoc); // Updated from base44.entities.Document.create()
+      const createdDoc = await Document.create(newDoc);
       await loadDocuments(searchQuery);
       setSelectedDocument(createdDoc);
     } catch (error) {
@@ -182,7 +151,7 @@ export default function FilesPage() {
 
   const updateDocument = async (docId, data) => {
     try {
-      const updatedDoc = await Document.update(docId, data); // Updated from base44.entities.Document.update()
+      const updatedDoc = await Document.update(docId, data);
       await loadDocuments(searchQuery);
       setSelectedDocument(updatedDoc);
     } catch (error) {
@@ -192,7 +161,7 @@ export default function FilesPage() {
 
   const toggleFavorite = async (document) => {
     try {
-      await Document.update(document.id, { // Updated from base44.entities.Document.update()
+      await Document.update(document.id, {
         is_favorite: !document.is_favorite
       });
       await loadDocuments(searchQuery);
@@ -203,7 +172,7 @@ export default function FilesPage() {
 
   const deleteDocument = async (documentId) => {
     try {
-      await Document.delete(documentId); // Updated from base44.entities.Document.delete()
+      await Document.delete(documentId);
       if (selectedDocument && selectedDocument.id === documentId) {
         setSelectedDocument(null);
       }
@@ -250,28 +219,10 @@ export default function FilesPage() {
     return templates[type] || "";
   };
 
-  if (!authChecked) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="w-8 h-8 border-2 border-[#ff6b35] border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full space-y-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-white font-mono tracking-wider">REGISTRE FICHIERS</h1>
-        </div>
-        <div className="p-16 text-center bg-[#2a2a2a] border border-[#3a3a3a]">
-          <LogIn className="w-16 h-16 mx-auto mb-6 text-[#ff6b35]" />
-          <h3 className="text-2xl font-bold text-white mb-4 font-mono">CONNEXION REQUISE</h3>
-          <Button onClick={handleLogin} className="tactical-button h-14 px-8">
-            <LogIn className="w-6 h-6 mr-3" />
-            SE CONNECTER
-          </Button>
-        </div>
       </div>
     );
   }

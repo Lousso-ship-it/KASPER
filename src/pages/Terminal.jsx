@@ -2,17 +2,14 @@
 import { useState, useEffect } from "react";
 import { BrokerConnection } from "@/api/entities";
 import { TradingBot } from "@/api/entities";
-import { User } from "@/api/entities";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
+import {
   Link,
   Bot,
   CheckCircle,
   Monitor,
   BarChart3,
   Activity,
-  LogIn,
   TrendingUp
 } from "lucide-react";
 import BrokerConnections from "../components/exchange/BrokerConnections";
@@ -25,27 +22,15 @@ import GlobalIndices from "../components/markets/GlobalIndices";
 export default function TerminalPage() {
   const [connections, setConnections] = useState([]);
   const [tradingBots, setTradingBots] = useState([]);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkAuthAndLoadData();
+    loadTerminalData();
   }, []);
-
-  const checkAuthAndLoadData = async () => {
-    try {
-      await User.me();
-      setIsAuthenticated(true);
-      await loadTerminalData();
-    } catch {
-      setIsAuthenticated(false);
-    } finally {
-      setAuthChecked(true);
-    }
-  };
 
   const loadTerminalData = async () => {
     try {
+      setLoading(true);
       const [connectionsData, botsData] = await Promise.all([
         BrokerConnection.list(),
         TradingBot.list()
@@ -54,45 +39,15 @@ export default function TerminalPage() {
       setTradingBots(botsData);
     } catch (error) {
       console.error("Erreur chargement données:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleLogin = async () => {
-    try {
-      await User.login();
-    } catch (error) {
-      console.error("Erreur connexion:", error);
-    }
-  };
-
-  if (!authChecked) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="w-8 h-8 border-2 border-[#ff6b35] border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full space-y-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-white font-mono tracking-wider">
-            TERMINAL FINANCIER
-          </h1>
-          <p className="text-[#a0a0a0] text-lg font-mono max-w-2xl">
-            Connectez vos brokers, gérez votre portfolio et déployez des bots de trading automatisés.
-          </p>
-        </div>
-        
-        <div className="p-16 text-center bg-[#2a2a2a] border border-[#3a3a3a]">
-          <LogIn className="w-16 h-16 mx-auto mb-6 text-[#ff6b35]" />
-          <h3 className="text-2xl font-bold text-white mb-4 font-mono">CONNEXION REQUISE</h3>
-          <Button onClick={handleLogin} className="tactical-button h-14 px-8" aria-label="Se connecter">
-            <LogIn className="w-6 h-6 mr-3" />
-            SE CONNECTER
-          </Button>
-        </div>
       </div>
     );
   }

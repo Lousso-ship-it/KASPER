@@ -1,22 +1,15 @@
-import { base44 } from './base44Client';
+import { callEndpoint } from './client';
 
+export const InvokeLLM = (data) => callEndpoint('integrations/invoke-llm', data);
+export const SendEmail = (data) => callEndpoint('integrations/send-email', data);
+export const UploadFile = (data) => callEndpoint('integrations/upload-file', data);
+export const GenerateImage = (data) => callEndpoint('integrations/generate-image', data);
+export const ExtractDataFromUploadedFile = (data) => callEndpoint('integrations/extract-data', data);
 
-
-
-export const Core = base44.integrations.Core;
-
-export const InvokeLLM = base44.integrations.Core.InvokeLLM;
-
-export const SendEmail = base44.integrations.Core.SendEmail;
-
-export const UploadFile = base44.integrations.Core.UploadFile;
-
-export const GenerateImage = base44.integrations.Core.GenerateImage;
-
-export const ExtractDataFromUploadedFile = base44.integrations.Core.ExtractDataFromUploadedFile;
-
-
-
-
-
-
+export const Core = {
+  InvokeLLM,
+  SendEmail,
+  UploadFile,
+  GenerateImage,
+  ExtractDataFromUploadedFile
+};
