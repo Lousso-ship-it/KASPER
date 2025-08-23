@@ -1,19 +1,10 @@
-import { base44 } from './base44Client';
+import { createEntity } from './client';
 
+export const Dataset = createEntity('datasets');
+export const Analysis = createEntity('analyses');
+export const Task = createEntity('tasks');
+export const Document = createEntity('documents');
+export const BrokerConnection = createEntity('broker-connections');
+export const TradingBot = createEntity('trading-bots');
 
-export const Dataset = base44.entities.Dataset;
-
-export const Analysis = base44.entities.Analysis;
-
-export const Task = base44.entities.Task;
-
-export const Document = base44.entities.Document;
-
-export const BrokerConnection = base44.entities.BrokerConnection;
-
-export const TradingBot = base44.entities.TradingBot;
-
-
-
-// auth sdk:
-export const User = base44.auth;
+export const User = createEntity('users');

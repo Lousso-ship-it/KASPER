@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Task } from "@/api/entities"; // Changed from base44 client to direct Task entity import
+import { Task } from "@/api/entities";
 import { User } from "@/api/entities";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -49,7 +49,7 @@ export default function TasksPage() {
 
   const loadTasks = async () => {
     try {
-      const fetchedTasks = await Task.list(); // Changed from base44.entities.Task.list()
+      const fetchedTasks = await Task.list();
       setTasks(fetchedTasks);
     } catch (error) {
       console.error("Error loading tasks:", error);
@@ -85,7 +85,7 @@ export default function TasksPage() {
 
   const toggleTaskStatus = async (task) => {
     try {
-      await Task.update(task.id, { // Changed from base44.entities.Task.update()
+      await Task.update(task.id, {
         is_active: !task.is_active
       });
       await loadTasks();
