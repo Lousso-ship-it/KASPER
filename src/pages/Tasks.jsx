@@ -38,10 +38,11 @@ export default function TasksPage() {
 
   const handleCreateTask = async (taskData) => {
     try {
-      const { outputDatasetId, ...rest } = taskData;
+      const { outputDatasetId, pipeline, parameters, ...rest } = taskData;
       await Task.create({
         ...rest,
         output_dataset_id: outputDatasetId,
+        parameters: { ...parameters, pipeline },
         next_execution: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       });
       setShowForm(false);
