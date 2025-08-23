@@ -6,7 +6,7 @@ KASPER is a Vite + React application providing an integrated analytics platform.
 - **Chat** – AI assistant for natural language queries.
 - **Tâches** – builder for automated data workflows.
 - **Fichiers** – centralized library of datasets and reports.
-- **Terminal** – connect brokers and monitor financial markets.
+- **Terminal** – monitor global financial markets in real time without authentication.
 - **Monitor** – dashboard creator.
 - **Explorateur** – search across open data sources.
 
