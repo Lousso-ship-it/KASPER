@@ -10,10 +10,9 @@ const Economic = lazy(() => import('./Economic'));
 const Financial = lazy(() => import('./Financial'));
 const Markets = lazy(() => import('./Markets'));
 const News = lazy(() => import('./News'));
-const Explorer = lazy(() => import('./Explorer'));
 const Tasks = lazy(() => import('./Tasks'));
 const Files = lazy(() => import('./Files'));
-const Terminal = lazy(() => import('./Terminal'));
+const Exploration = lazy(() => import('./Exploration'));
 const Monitor = lazy(() => import('./Monitor'));
 const Dashboard = lazy(() => import('./Dashboard'));
 
@@ -30,16 +29,15 @@ const PAGES = {
     Financial: Financial,
     
     Markets: Markets,
-    
+
     News: News,
-    
-    Explorer: Explorer,
-    
+
+    Exploration: Exploration,
+
     Tasks: Tasks,
-    
+
     Files: Files,
-    
-    Terminal: Terminal,
+
     Monitor: Monitor,
     Dashboard: Dashboard,
     
@@ -75,10 +73,9 @@ function PagesContent() {
                     <Route path="/Financial" element={<Financial />} />
                     <Route path="/Markets" element={<Markets />} />
                     <Route path="/News" element={<News />} />
-                    <Route path="/Explorer" element={<Explorer />} />
+                    <Route path="/Exploration" element={<Exploration />} />
                     <Route path="/Tasks" element={<Tasks />} />
                     <Route path="/Files" element={<Files />} />
-                    <Route path="/Terminal" element={<Terminal />} />
                     <Route path="/Monitor" element={<Monitor />} />
                     <Route path="/Dashboard" element={<Dashboard />} />
                 </Routes>
