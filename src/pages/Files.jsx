@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
-import { Document } from "@/api/entities"; // Changed from base44
+import { Document } from "@/api/entities";
 import { User } from "@/api/entities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -147,7 +147,7 @@ export default function FilesPage() {
           generation_date: new Date().toISOString()
         };
 
-        const createdDoc = await Document.create(newDoc); // Updated from base44.entities.Document.create()
+        const createdDoc = await Document.create(newDoc);
         await loadDocuments(searchQuery);
         setSelectedDocument(createdDoc);
       }
@@ -172,7 +172,7 @@ export default function FilesPage() {
       if (documentType === 'code') {
           newDoc.language = 'plaintext';
       }
-      const createdDoc = await Document.create(newDoc); // Updated from base44.entities.Document.create()
+      const createdDoc = await Document.create(newDoc);
       await loadDocuments(searchQuery);
       setSelectedDocument(createdDoc);
     } catch (error) {
@@ -182,7 +182,7 @@ export default function FilesPage() {
 
   const updateDocument = async (docId, data) => {
     try {
-      const updatedDoc = await Document.update(docId, data); // Updated from base44.entities.Document.update()
+      const updatedDoc = await Document.update(docId, data);
       await loadDocuments(searchQuery);
       setSelectedDocument(updatedDoc);
     } catch (error) {
@@ -192,7 +192,7 @@ export default function FilesPage() {
 
   const toggleFavorite = async (document) => {
     try {
-      await Document.update(document.id, { // Updated from base44.entities.Document.update()
+      await Document.update(document.id, {
         is_favorite: !document.is_favorite
       });
       await loadDocuments(searchQuery);
@@ -203,7 +203,7 @@ export default function FilesPage() {
 
   const deleteDocument = async (documentId) => {
     try {
-      await Document.delete(documentId); // Updated from base44.entities.Document.delete()
+      await Document.delete(documentId);
       if (selectedDocument && selectedDocument.id === documentId) {
         setSelectedDocument(null);
       }

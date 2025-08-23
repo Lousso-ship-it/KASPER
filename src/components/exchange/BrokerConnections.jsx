@@ -19,10 +19,7 @@ import {
   Eye,
   EyeOff
 } from "lucide-react";
-import { base44 } from "@/api/base44Client";
-
-// Destructure BrokerConnection from base44.entities to allow direct usage as per the outline
-const { BrokerConnection } = base44.entities;
+import { BrokerConnection } from "@/api/entities";
 
 const brokersList = [
   // Crypto Exchanges
