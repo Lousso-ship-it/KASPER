@@ -15,7 +15,6 @@ const TradingViewAdvanced = ({ symbol = "AAPL", interval = "1D" }) => {
     script.async = true;
     script.onload = () => {
       if (window.TradingView) {
-        /* eslint-disable no-new */
         new window.TradingView.widget({
           symbol,
           interval,
