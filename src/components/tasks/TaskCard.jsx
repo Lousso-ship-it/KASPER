@@ -1,19 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  Play, 
-  Pause, 
-  MoreVertical, 
-  Clock, 
-  TrendingUp, 
-  BarChart3, 
-  FileText, 
+import {
+  Play,
+  Pause,
+  Clock,
+  TrendingUp,
+  FileText,
   AlertTriangle,
   Calendar,
   Activity
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const typeIcons = {
   analysis: TrendingUp,
@@ -39,7 +38,18 @@ const frequencyLabels = {
 
 export default function TaskCard({ task, onToggleStatus }) {
   const TypeIcon = typeIcons[task.type] || Activity;
-  
+  const [logs, setLogs] = useState([]);
+
+  const loadLogs = async () => {
+    try {
+      const res = await fetch(`/api/tasks/${task.id}/logs`);
+      const data = await res.json();
+      setLogs(data || []);
+    } catch (e) {
+      setLogs(["Impossible de charger les logs"]);
+    }
+  };
+
   return (
     <Card className="tactical-card hover:border-[#ff6b35]/30 transition-all duration-300">
       <CardHeader>
@@ -72,13 +82,31 @@ export default function TaskCard({ task, onToggleStatus }) {
             >
               {task.is_active ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-[#a0a0a0] hover:text-white"
-            >
-              <MoreVertical className="w-4 h-4" />
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-[#a0a0a0] hover:text-white"
+                  onClick={loadLogs}
+                >
+                  <FileText className="w-4 h-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-[#1a1a1a] text-white border-[#3a3a3a]">
+                <DialogHeader>
+                  <DialogTitle className="font-mono">Logs de la tâche</DialogTitle>
+                </DialogHeader>
+                <div className="max-h-60 overflow-y-auto mt-4 space-y-2 text-sm">
+                  {logs.length === 0 && <p className="text-[#a0a0a0]">Aucun log</p>}
+                  {logs.map((log, idx) => (
+                    <p key={idx} className="font-mono text-[#a0a0a0]">
+                      {log}
+                    </p>
+                  ))}
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </CardHeader>

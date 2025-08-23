@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { X, Zap } from "lucide-react";
+import DataFlowBuilder from "./DataFlowBuilder";
 
 export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
   const [formData, setFormData] = useState({
@@ -14,8 +15,10 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
     category: selectedTemplate?.category || "",
     frequency: "daily",
     outputDatasetId: selectedTemplate?.outputDatasetId || "",
+    pipeline: { nodes: [], edges: [] },
     parameters: {
-      email_notifications: true
+      email_notifications: true,
+      owner: ""
     }
   });
 
@@ -136,6 +139,33 @@ export default function TaskForm({ onSubmit, onCancel, selectedTemplate }) {
                 value={formData.outputDatasetId}
                 onChange={(e) => setFormData({ ...formData, outputDatasetId: e.target.value })}
                 className="bg-[#1a1a1a] border-[#3a3a3a] text-white font-mono"
+              />
+            </div>
+
+            {/* Propriétaire */}
+            <div>
+              <label className="block text-sm font-bold text-[#a0a0a0] mb-2 font-mono uppercase tracking-wider">
+                Propriétaire
+              </label>
+              <Input
+                placeholder="ex: julien@entreprise.com"
+                value={formData.parameters.owner}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  parameters: { ...formData.parameters, owner: e.target.value }
+                })}
+                className="bg-[#1a1a1a] border-[#3a3a3a] text-white font-mono"
+              />
+            </div>
+
+            {/* Pipeline Builder */}
+            <div>
+              <label className="block text-sm font-bold text-[#a0a0a0] mb-2 font-mono uppercase tracking-wider">
+                Flux de données
+              </label>
+              <DataFlowBuilder
+                value={formData.pipeline}
+                onChange={(pipeline) => setFormData({ ...formData, pipeline })}
               />
             </div>
 
