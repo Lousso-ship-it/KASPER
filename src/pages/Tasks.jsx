@@ -26,10 +26,7 @@ export default function TasksPage() {
 
   const loadTasks = async () => {
     try {
-<<<<<<< codex/remove-base44-dependency-2lpm4b
       setLoading(true);
-=======
->>>>>>> main
       const fetchedTasks = await Task.list();
       setTasks(fetchedTasks);
     } catch (error) {
