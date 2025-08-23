@@ -15,19 +15,20 @@ const Files = lazy(() => import('./Files'));
 const Exploration = lazy(() => import('./Exploration'));
 const Monitor = lazy(() => import('./Monitor'));
 const Dashboard = lazy(() => import('./Dashboard'));
+const Exchange = lazy(() => import('./Exchange'));
 
 const PAGES = {
-    
+
     Intelligence: Intelligence,
-    
+
     Admin: Admin,
-    
+
     SocioDemographic: SocioDemographic,
-    
+
     Economic: Economic,
-    
+
     Financial: Financial,
-    
+
     Markets: Markets,
 
     News: News,
@@ -37,6 +38,8 @@ const PAGES = {
     Tasks: Tasks,
 
     Files: Files,
+
+    Exchange: Exchange,
 
     Monitor: Monitor,
     Dashboard: Dashboard,
@@ -76,6 +79,7 @@ function PagesContent() {
                     <Route path="/Exploration" element={<Exploration />} />
                     <Route path="/Tasks" element={<Tasks />} />
                     <Route path="/Files" element={<Files />} />
+                    <Route path="/Exchange" element={<Exchange />} />
                     <Route path="/Monitor" element={<Monitor />} />
                     <Route path="/Dashboard" element={<Dashboard />} />
                 </Routes>

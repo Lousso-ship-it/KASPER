@@ -11,6 +11,7 @@ import {
   Settings,
   TrendingUp,
   BarChart3,
+  Bot,
 } from "lucide-react";
 import AnimatedBackground from "../components/common/AnimatedBackground";
 import GlobalSearch from "../components/common/GlobalSearch";
@@ -20,6 +21,7 @@ const mainNavItems = [
     { title: 'TÂCHES', href: createPageUrl('Tasks'), icon: Settings },
     { title: 'FICHIERS', href: createPageUrl('Files'), icon: LayoutGrid },
     { title: 'TERMINAL', href: createPageUrl('Terminal'), icon: TrendingUp },
+    { title: 'EXCHANGE', href: createPageUrl('Exchange'), icon: Bot },
     { title: 'MONITOR', href: createPageUrl('Monitor'), icon: BarChart3 },
     { title: 'DASHBOARD', href: createPageUrl('Dashboard'), icon: LayoutDashboard },
   ];
