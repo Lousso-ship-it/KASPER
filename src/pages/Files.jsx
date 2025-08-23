@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Search,
-  LogIn,
   Filter,
   Plus,
   SortDesc,
@@ -32,40 +31,20 @@ export default function FilesPage() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    checkAuthAndLoadDocuments();
-  }, []);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadDocuments(searchQuery);
-    }
-  }, [searchQuery, isAuthenticated]);
+    loadDocuments(searchQuery);
+  }, [searchQuery]);
 
   useEffect(() => {
     filterAndSortDocuments();
   }, [documents, selectedCategory, selectedType, sortBy, sortOrder, selectedTags]);
 
-  const checkAuthAndLoadDocuments = async () => {
-    try {
-      await User.me();
-      setIsAuthenticated(true);
-      await loadDocuments(searchQuery);
-    } catch (error) {
-      setIsAuthenticated(false);
-    } finally {
-      setAuthChecked(true);
-      setLoading(false);
-    }
-  };
-
   const loadDocuments = async (query = "") => {
     try {
+      setLoading(true);
       const fetchedDocuments = query
         ? await Document.list({ query })
         : await Document.list();
@@ -79,17 +58,8 @@ export default function FilesPage() {
       }
     } catch (error) {
       console.error("Error loading documents:", error);
-      if (error.message && error.message.includes("logged in")) {
-        setIsAuthenticated(false);
-      }
-    }
-  };
-
-  const handleLogin = async () => {
-    try {
-      await User.login();
-    } catch (error) {
-      console.error("Login error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -250,28 +220,10 @@ export default function FilesPage() {
     return templates[type] || "";
   };
 
-  if (!authChecked) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="w-8 h-8 border-2 border-[#ff6b35] border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full space-y-8">
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-white font-mono tracking-wider">REGISTRE FICHIERS</h1>
-        </div>
-        <div className="p-16 text-center bg-[#2a2a2a] border border-[#3a3a3a]">
-          <LogIn className="w-16 h-16 mx-auto mb-6 text-[#ff6b35]" />
-          <h3 className="text-2xl font-bold text-white mb-4 font-mono">CONNEXION REQUISE</h3>
-          <Button onClick={handleLogin} className="tactical-button h-14 px-8">
-            <LogIn className="w-6 h-6 mr-3" />
-            SE CONNECTER
-          </Button>
-        </div>
       </div>
     );
   }
@@ -456,3 +408,4 @@ export default function FilesPage() {
     </div>
   );
 }
+
