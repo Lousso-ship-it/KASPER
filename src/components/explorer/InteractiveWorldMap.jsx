@@ -1,11 +1,14 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { getCountriesGeoJSON } from '../../api/dataProviders';
 
 const InteractiveWorldMap = ({ onCountryClick }) => {
   const mountRef = useRef(null);
   const [loading, setLoading] = useState(true);
+  const [hoverName, setHoverName] = useState(null);
+  const [pointerPos, setPointerPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -48,6 +51,13 @@ const InteractiveWorldMap = ({ onCountryClick }) => {
     renderer.setPixelRatio(window.devicePixelRatio);
     currentMount.appendChild(renderer.domElement);
 
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableRotate = false;
+    controls.enablePan = true;
+    controls.enableZoom = true;
+    controls.minZoom = 0.5;
+    controls.maxZoom = 8;
+
     // Lumières
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
@@ -70,6 +80,7 @@ const InteractiveWorldMap = ({ onCountryClick }) => {
       const rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      setPointerPos({ x: event.clientX - rect.left, y: event.clientY - rect.top });
     };
 
     const handleClick = () => {
@@ -180,6 +191,9 @@ const InteractiveWorldMap = ({ onCountryClick }) => {
           if (hoveredCountry) {
               hoveredCountry.children.forEach(child => child.material = highlightMaterial);
               hoveredCountry.userData.targetZ = hoverElevation;
+              setHoverName(hoveredCountry.name);
+          } else {
+              setHoverName(null);
           }
       }
       
@@ -187,6 +201,7 @@ const InteractiveWorldMap = ({ onCountryClick }) => {
           country.position.z = THREE.MathUtils.lerp(country.position.z, country.userData.targetZ, 0.1);
       });
 
+      controls.update();
       renderer.render(scene, camera);
     };
     animate();
@@ -199,6 +214,7 @@ const InteractiveWorldMap = ({ onCountryClick }) => {
       if (renderer.domElement.parentElement) {
         renderer.domElement.parentElement.removeChild(renderer.domElement);
       }
+      controls.dispose();
       renderer.dispose();
     };
   }, [onCountryClick]);
@@ -211,6 +227,14 @@ const InteractiveWorldMap = ({ onCountryClick }) => {
             <div className="w-8 h-8 border-2 border-[#ff6b35] border-t-transparent rounded-full animate-spin"></div>
             <span className="text-[#a0a0a0] font-mono">Chargement des données géopolitiques...</span>
           </div>
+        </div>
+      )}
+      {hoverName && (
+        <div
+          className="absolute z-30 pointer-events-none bg-[#1a1a1a]/80 text-white text-xs px-2 py-1 rounded"
+          style={{ left: pointerPos.x + 10, top: pointerPos.y + 10 }}
+        >
+          {hoverName}
         </div>
       )}
       <div ref={mountRef} className="w-full h-full absolute inset-0" />
