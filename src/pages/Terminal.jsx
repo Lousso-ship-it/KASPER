@@ -1,5 +1,6 @@
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, LineChart } from "lucide-react";
 import GlobalIndices from "../components/markets/GlobalIndices";
+import AdvancedAnalytics from "../components/terminal/AdvancedAnalytics";
 
 /**
  * TerminalPage affiche les principaux indices boursiers mondiaux sans exiger
@@ -19,17 +20,31 @@ export default function TerminalPage() {
         </div>
       </div>
 
-      {/* Tableau des indices */}
-      <div className="flex-1 overflow-hidden">
-        <div className="bg-[#1a1a1a] border border-[#3a3a3a] rounded-md overflow-hidden h-[calc(100vh-200px)]">
+      {/* Sections */}
+      <div className="flex-1 overflow-y-auto space-y-6">
+        {/* Tableau des indices */}
+        <div className="bg-[#1a1a1a] border border-[#3a3a3a] rounded-md overflow-hidden">
           <div className="flex items-center gap-4 text-sm font-mono p-3 border-b border-[#3a3a3a]">
             <div className="flex items-center gap-2 text-white">
               <CheckCircle className="w-4 h-4 text-[#ff6b35]" />
               <span>Indices Globaux</span>
             </div>
           </div>
-          <div className="overflow-y-auto h-full">
+          <div className="overflow-y-auto h-96">
             <GlobalIndices />
+          </div>
+        </div>
+
+        {/* Analytics avancés */}
+        <div className="bg-[#1a1a1a] border border-[#3a3a3a] rounded-md overflow-hidden">
+          <div className="flex items-center gap-4 text-sm font-mono p-3 border-b border-[#3a3a3a]">
+            <div className="flex items-center gap-2 text-white">
+              <LineChart className="w-4 h-4 text-[#ff6b35]" />
+              <span>Analytics Avancés</span>
+            </div>
+          </div>
+          <div className="overflow-y-auto h-96">
+            <AdvancedAnalytics />
           </div>
         </div>
       </div>
